@@ -8,7 +8,7 @@ WallYeah non raccoglie nulla e non manda niente da nessuna parte.
 
 ## Provala
 
-👉 **[Apri WallYeah](https://USERNAME.github.io/wallyeah/)**
+👉 **[Apri WallYeah](https://manlyo666.github.io/wallyeah/)**
 
 Per usarla come una vera app (anche senza connessione):
 
