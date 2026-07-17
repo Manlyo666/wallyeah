@@ -1,5 +1,7 @@
 # WallYeah
 
+*[🇮🇹 Leggi in italiano](README.it.md)*
+
 A portfolio tracker for the things you actually own: stocks, ETFs, funds, bonds,
 government bonds, crypto, cash, and whatever else you want to keep an eye on.
 
@@ -10,13 +12,15 @@ collects nothing and sends nothing anywhere.
 
 ## Try it
 
-👉 **[Open WallYeah](https://USERNAME.github.io/wallyeah/)**
+👉 **[Open WallYeah](https://Manlyo666.github.io/wallyeah/)**
 
 To use it as a real app (offline included):
 
-- **Android / Chrome** — menu ⋮ → *Install app* (or *Add to Home screen*)
+- **Android / Chrome** — menu ⋮ → *Install app*
 - **iPhone / Safari** — Share button → *Add to Home Screen*
 - **Desktop** — the install icon in the address bar
+
+Or, once it's open: **Impostazioni → Installa l'app**.
 
 Once installed it updates itself: when a new version is out, a bar shows up at the
 bottom, you tap *Aggiorna*, and that's it.
@@ -59,7 +63,7 @@ Data lives in the browser's `localStorage` under the key `portafoglio_v4`.
 
 ## Reporting a problem
 
-Open an [issue](https://github.com/USERNAME/wallyeah/issues) describing what happened,
+Open an [issue](https://github.com/Manlyo666/wallyeah/issues) describing what happened,
 what you expected, and which device and browser you're on. If you can, attach a backup
 with made-up figures that reproduces it — **never your real one**, it holds your actual
 amounts.
