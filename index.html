@@ -97,10 +97,12 @@
   /* Il campo si dimensiona sul testo che contiene (attributo size), non prendendosi tutto
      lo spazio: un nome corto occupa poco, uno lungo cresce fino al massimo e poi scorre
      internamente, senza mai schiacciare i valori a destra. */
-  .card-summary input.cs-nome-input{flex:0 1 auto; min-width:3rem; max-width:50%; width:50%;
+  /* CARD APERTA: qui non ci sono piu' numeri sulla riga, quindi il campo nome si prende
+     tutto lo spazio che resta. Niente troncamento: si legge e si scrive per intero. */
+  .card-summary input.cs-nome-input{flex:1 1 auto; min-width:3rem; max-width:none; width:auto;
     background:transparent; border:none;
     border-bottom:1px dashed var(--border); color:var(--text); font-family:'Space Grotesk',sans-serif;
-    font-size:.88rem; font-weight:600; padding:0 0 1px; transition:border-color .15s;}
+    font-size:.92rem; font-weight:600; padding:0 0 1px; transition:border-color .15s;}
   .card-summary input.cs-nome-input:focus{border-bottom-color:var(--gold); outline:none;}
   .card-summary input.cs-nome-input::placeholder{color:var(--gold-soft); opacity:.7;}
   /* descrizione: il nome completo del titolo, per ricordarsi qual è. Facoltativa. */
@@ -368,31 +370,31 @@
   .card-summary .cs-grip:focus-visible{outline:2px solid var(--gold-soft); outline-offset:2px; border-radius:4px;}
   .card-summary .cs-chevron{color:var(--muted); font-size:.8rem; width:.9rem; flex:0 0 auto;}
   .card-summary .cs-badge{width:1.5rem; height:1.5rem; display:flex; align-items:center; justify-content:center; border-radius:7px; font-size:.9rem; flex:0 0 auto;}
-  /* Il nome non supera MAI metà riga: oltre quella soglia tronca con l'ellissi. Il nome
-     completo sta nel campo esteso della card aperta, qui basta riconoscere la voce
-     ("Amundi MSCI Emer…"). Così i numeri a destra hanno sempre il loro spazio garantito
-     e non escono dall'impaginazione, aperta o chiusa che sia. */
+  /* CARD CHIUSA: il nome cede meta' riga ai numeri e tronca con l'ellissi. Il nome per
+     intero si legge aprendo la voce, dove c'e' il campo apposito. */
   .card-summary .cs-nome{flex:0 1 auto; min-width:0; max-width:50%;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.88rem;}
   .card-summary .cs-nome .noname{color:var(--muted); font-weight:400; font-style:italic;}
   /* margin-left:auto = assorbe lo spazio libero, tenendo i valori ancorati a destra
      qualunque sia la larghezza del nome (che ora si dimensiona sul suo contenuto) */
-  .card-summary .cs-money{display:flex; flex-direction:column; align-items:flex-end; line-height:1.15; flex:0 1 auto; min-width:0; margin-left:auto;}
-  .card-summary .cs-tot{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.78rem; white-space:nowrap;}
+  .card-summary .cs-money{display:flex; flex-direction:column; align-items:flex-end; line-height:1.2; flex:0 1 auto; min-width:0; margin-left:auto;}
+  /* L'attuale e' il numero che conta: piu' grande e in colore pieno. */
+  .card-summary .cs-tot{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.85rem; white-space:nowrap;}
   .card-summary .cs-tot.cs-solo{margin-left:auto;} /* liquidità: unico valore, ancorato a destra */
-  /* riga secondaria: versato e quote. Tronca per prima, è il dato meno urgente. */
-  .card-summary .cs-carico{font-size:.62rem; color:var(--muted); margin-top:.05rem;
+  /* Il versato sta sotto, in piccolo e smorzato: la posizione dice gia' cos'e', quindi
+     l'etichetta "vers." era solo rumore che rubava spazio alle quote. */
+  .card-summary .cs-carico{font-size:.6rem; color:var(--muted); margin-top:.1rem;
     max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .card-summary .cs-perc{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.78rem; flex:0 0 auto; min-width:2.9rem; text-align:right; white-space:nowrap;}
+  .card-summary .cs-perc{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.85rem; flex:0 0 auto; min-width:2.9rem; text-align:right; white-space:nowrap;}
   .card-summary .cs-perc.cs-solo{margin-left:auto;} /* card chiusa: unico valore, a destra */
   .card-summary .cs-perc.pos{color:var(--green);} .card-summary .cs-perc.neg{color:var(--red);} .card-summary .cs-perc.zero{color:var(--muted);}
   /* Schermi molto stretti: comprimo ancora un po' e stringo le spaziature. */
   @media (max-width:360px){
     .card-summary{gap:.4rem;}
-    .card-summary .cs-tot{font-size:.74rem;}
-    .card-summary .cs-carico{font-size:.58rem;}
-    .card-summary .cs-perc{font-size:.74rem; min-width:2.6rem;}
+    .card-summary .cs-tot{font-size:.8rem;}
+    .card-summary .cs-carico{font-size:.56rem;}
+    .card-summary .cs-perc{font-size:.8rem; min-width:2.6rem;}
   }
   .card.collapsed{padding-top:.7rem; padding-bottom:.7rem;}
   .card-body{margin-top:.7rem;}
@@ -620,7 +622,7 @@ function locale(){ return LANGS[LANG].locale; }
 const I18N = {
   it: {
     'u.az':'az.', 'u.coin':'coin', 'u.quote':'quote',
-    'cs.vers':'vers.', 'cs.noname':'Senza nome',
+    'cs.noname':'Senza nome',
     'ph.nomeBreve':'Nome breve…',
     'grip.title':'Trascina per riordinare',
 
@@ -843,7 +845,7 @@ const I18N = {
   },
   en: {
     'u.az':'sh.', 'u.coin':'coin', 'u.quote':'units',
-    'cs.vers':'paid', 'cs.noname':'Unnamed',
+    'cs.noname':'Unnamed',
     'ph.nomeBreve':'Short name…',
     'grip.title':'Drag to reorder',
 
@@ -1094,7 +1096,7 @@ const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
 // della cache, così un nuovo numero costringe il browser a riscaricare tutto.
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.0";
 
 const RANGES = [
   { key:'1m', label:'1 mese', months:1 },
@@ -1418,6 +1420,29 @@ function flashBtn(btn, testoOk){
     btn.textContent = orig;
     delete btn.dataset.flashing;
   }, 1100);
+}
+// Importo per le card chiuse. Abbrevia SOLO quando l'abbreviazione fa guadagnare
+// davvero spazio: sotto i 100.000 una cifra come "2.556,80" e' gia' corta e leggibile,
+// mentre "2,6k" nasconderebbe 56 euro per risparmiare tre caratteri. Sopra quella
+// soglia le cifre iniziano a rubare spazio al nome, e li' k/M/B ripagano.
+// 2556,8 → "€ 2.557"  ·  128000 → "€ 128k"  ·  4,2 mln → "€ 4,2M"
+function eurC(v){
+  // Sotto i 100k la cifra piena si legge bene e non ruba spazio al nome: niente suffisso,
+  // e nessun decimale (i centesimi sono i due caratteri meno utili della riga).
+  const a = Math.abs(v);
+  if(a < 1e5) return "€ " + nfmt(Math.round(v), 0);
+  // Sopra, scelgo la scala partendo dalla piu' piccola e salgo finche' il numero da
+  // mostrare, UNA VOLTA ARROTONDATO, sta sotto 1000. Il controllo va fatto sul valore
+  // arrotondato e non su quello grezzo: 999.999 ai k darebbe "1000k" invece di "1M",
+  // e lo stesso vale a ogni gradino sopra ("1000M" invece di "1B").
+  const scale = [[1e3,'k',0], [1e6,'M',2], [1e9,'B',2]];
+  for(const [div, suf, dec] of scale){
+    const x = Number((v/div).toFixed(dec));
+    if(Math.abs(x) < 1000) return "€ " + nfmt(x, dec) + suf;
+  }
+  // Oltre i mille miliardi: resto in B invece di cadere nella cifra piena, che qui
+  // sarebbe lunghissima e proprio quello che stiamo cercando di evitare.
+  return "€ " + nfmt(Number((v/1e9).toFixed(2)), 2) + "B";
 }
 function pct(v){ const s=(v*100).toLocaleString(locale(),{minimumFractionDigits:1,maximumFractionDigits:1}); return (v>0?"+":"")+s+"%"; }
 function esc(s){ return String(s==null?'':s).replace(/"/g,'&quot;'); }
@@ -2035,13 +2060,18 @@ function vociCardHTML(schedaId, v){
   // ---- SUMMARY (sempre visibile) ----
   const nomeShow = v.nome ? esc(v.nome) : `<span class="noname">${T('js.senzaNome')}</span>`;
   let summaryVals;
-  if(cm === 'importo'){
+  if(cardOpen){
+    // Card APERTA: niente numeri qui. Valore, versato e quote stanno gia' nei campi
+    // subito sotto, a piena dimensione: ripeterli in alto a destra li rende solo piu'
+    // piccoli e piu' difficili da leggere. Tolti, il nome si prende tutta la riga.
+    summaryVals = '';
+  } else if(cm === 'importo'){
     // Liquidità: solo il saldo (cs-solo lo tiene ancorato a destra, come gli altri tipi)
-    summaryVals = `<span class="cs-tot cs-solo">${eur(val.attuale)}</span>`;
+    summaryVals = `<span class="cs-tot cs-solo">${eurC(val.attuale)}</span>`;
   } else {
-    // Stessi dati con la card aperta e con la card chiusa: aprire una voce non deve
-    // cambiarle i numeri sotto gli occhi. Lo spazio lo garantisce il CSS, che tiene il
-    // nome entro metà riga e tronca lui, invece di far uscire le percentuali dal bordo.
+    // Card CHIUSA: l'attuale sopra e piu' grande, il versato sotto in piccolo senza
+    // etichetta (la posizione basta a distinguerli). Le cifre passano da eurC, che
+    // accorcia solo quando serve davvero.
     const mostraQ = (cm === 'qp' && v.qty != null && v.qty !== '');
     const qLbl = v.tipo==='azioni' ? T('u.az') : (v.tipo==='crypto' ? T('u.coin') : T('u.quote'));
     const quoteTxt = mostraQ
@@ -2049,8 +2079,8 @@ function vociCardHTML(schedaId, v){
       : '';
     summaryVals = `
       <span class="cs-money">
-        <span class="cs-tot">${eur(val.attuale)}</span>
-        <span class="cs-carico">${T('cs.vers')} ${eur(val.carico)}${quoteTxt}</span>
+        <span class="cs-tot">${eurC(val.attuale)}</span>
+        <span class="cs-carico">${eurC(val.carico)}${quoteTxt}</span>
       </span>
       <span class="cs-perc ${gClass(g)}">${pct(gp)}</span>`;
   }
@@ -2509,8 +2539,10 @@ function updateCardResult(card, v){
   // .cs-solo va conservato: è lui che ancora a destra il valore unico. Riscrivendo
   // className secco lo perdevo e il numero saltava a sinistra al primo ricalcolo.
   if(perc){ perc.className='cs-perc '+gClass(g)+(perc.classList.contains('cs-solo')?' cs-solo':''); perc.textContent = pct(gp); }
+  // Da card aperta questi elementi non esistono (i numeri stanno nei campi sotto):
+  // le guardie sotto lo gestiscono da sole. Servono al ricalcolo della card chiusa.
   const csTot = card.querySelector('.cs-tot');
-  if(csTot) csTot.textContent = eur(val.attuale);
+  if(csTot) csTot.textContent = eurC(val.attuale);
   const csCarico = card.querySelector('.cs-carico');
   if(csCarico){
     let quoteTxt = '';
@@ -2518,7 +2550,7 @@ function updateCardResult(card, v){
       const qLbl = v.tipo==='azioni' ? T('u.az') : (v.tipo==='crypto' ? T('u.coin') : T('u.quote'));
       quoteTxt = ` · ${nfmt(n(v.qty), 4)} ${qLbl}`;
     }
-    csCarico.textContent = T('cs.vers') + ' ' + eur(val.carico) + quoteTxt;
+    csCarico.textContent = eurC(val.carico) + quoteTxt;
   }
   // riga cedole (solo informativa)
   let cedRiga = card.querySelector('.card-cedole');
