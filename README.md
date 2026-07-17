@@ -1,70 +1,74 @@
 # WallYeah
 
-Un'app per tenere traccia del proprio portafoglio di investimenti: azioni, ETF, fondi,
-obbligazioni, titoli di stato, crypto, liquidità e categorie personalizzate.
+A portfolio tracker for the things you actually own: stocks, ETFs, funds, bonds,
+government bonds, crypto, cash, and whatever else you want to keep an eye on.
 
-**I dati restano sul tuo dispositivo.** Nessun account, nessun server, niente da registrare.
-WallYeah non raccoglie nulla e non manda niente da nessuna parte.
+**Your data never leaves your device.** No account, no server, no sign-up. WallYeah
+collects nothing and sends nothing anywhere.
 
-## Provala
+> The interface is in Italian.
 
-👉 **[Apri WallYeah](https://manlyo666.github.io/wallyeah/)**
+## Try it
 
-Per usarla come una vera app (anche senza connessione):
+👉 **[Open WallYeah](https://USERNAME.github.io/wallyeah/)**
 
-- **Android / Chrome** — menu ⋮ → *Installa app* (o *Aggiungi a schermata Home*)
-- **iPhone / Safari** — tasto Condividi → *Aggiungi a Home*
-- **Computer** — l'icona di installazione nella barra degli indirizzi
+To use it as a real app (offline included):
 
-Una volta installata si aggiorna da sola: quando c'è una versione nuova compare una barra
-in basso, premi *Aggiorna* e sei a posto.
+- **Android / Chrome** — menu ⋮ → *Install app* (or *Add to Home screen*)
+- **iPhone / Safari** — Share button → *Add to Home Screen*
+- **Desktop** — the install icon in the address bar
 
-## Cosa fa
+Once installed it updates itself: when a new version is out, a bar shows up at the
+bottom, you tap *Aggiorna*, and that's it.
 
-- **Otto tipi di scheda**, ognuno col suo modo di calcolare: quantità × prezzo per azioni,
-  ETF, fondi e crypto; importo + rendimento per obbligazioni e titoli di stato; saldo per
-  la liquidità.
-- **Cedole** con cadenza (mensile, trimestrale, semestrale, annuale) e tasso a scaglioni
-  per i titoli step-up. Sono informative: non vengono sommate al patrimonio.
-- **Istantanee** dei valori, per costruire lo storico che alimenta i grafici.
-- **Grafici** a linea e a candela, con valore, guadagno, quote e rendimento per anno solare.
-- **Export in Excel** (.xlsx) su due fogli: per voce e per data.
-- **Backup** completo in JSON, da salvare dove vuoi.
+## What it does
 
-## Come è fatta
+- **Eight kinds of tab**, each with its own way of doing the math: quantity × price for
+  stocks, ETFs, funds and crypto; amount + yield for bonds and government bonds; plain
+  balance for cash.
+- **Coupons** with a schedule (monthly, quarterly, half-yearly, yearly) and step-up
+  rates for tiered bonds. They're informational only — never added to the portfolio value.
+- **Snapshots** of your figures, which build the history the charts run on.
+- **Charts**: line and candlestick, showing value, gain, units held, or return per
+  calendar year.
+- **Excel export** (.xlsx) with two sheets: one row per holding, or one row per date.
+- **Full backup** as a JSON file you keep wherever you like.
 
-Un solo file HTML, senza librerie né dipendenze. Tutto il codice è in `index.html`:
-niente build, niente npm, niente framework. Si può aprire anche direttamente dal disco
-(in quel caso però non si aggiorna da sola).
+## How it's built
 
-| File | A cosa serve |
+One HTML file, no libraries, no dependencies. Everything lives in `index.html`: no build
+step, no npm, no framework. You can even open it straight from disk — though it won't
+update itself that way.
+
+| File | What it's for |
 |---|---|
-| `index.html` | L'app: interfaccia, calcoli, grafici, export |
-| `sw.js` | Fa funzionare l'app offline e gestisce gli aggiornamenti |
-| `manifest.webmanifest` | Dice al telefono come installarla |
-| `icone/` | Icone per la schermata Home |
+| `index.html` | The app: interface, math, charts, export |
+| `sw.js` | Makes it work offline and handles updates |
+| `manifest.webmanifest` | Tells the phone how to install it |
+| `icone/` | Home screen icons |
 
-I dati vivono nel `localStorage` del browser, sotto la chiave `portafoglio_v4`.
+Data lives in the browser's `localStorage` under the key `portafoglio_v4`.
 
 ## Privacy
 
-- I dati **non escono mai** dal dispositivo: niente account, niente sincronizzazione, niente analytics.
-- L'unica richiesta esterna è per i font di Google e, se l'app è installata, il controllo
-  della versione — che scarica solo il file dell'app, senza mandare informazioni.
-- Il **backup** è un file che scarichi tu e tieni dove vuoi.
-- Svuotando i dati del browser si cancella anche il portafoglio: **fai backup regolari.**
+- Your data **never leaves the device**: no accounts, no sync, no analytics.
+- The only outside requests are for Google Fonts and, if installed, the version check —
+  which downloads the app file and sends nothing about you.
+- **Backups** are files you download and keep yourself.
+- Clearing your browser data wipes the portfolio too, so **back up regularly**.
 
-## Segnalare un problema
+## Reporting a problem
 
-Apri una [issue](https://github.com/USERNAME/wallyeah/issues) descrivendo cosa è successo,
-cosa ti aspettavi, e su quale dispositivo/browser. Se puoi, allega un backup con dati finti
-che riproduca il problema — **mai il tuo backup vero**, contiene i tuoi importi.
+Open an [issue](https://github.com/USERNAME/wallyeah/issues) describing what happened,
+what you expected, and which device and browser you're on. If you can, attach a backup
+with made-up figures that reproduces it — **never your real one**, it holds your actual
+amounts.
 
-## Licenza
+## License
 
-[MIT](LICENSE) — fanne quello che vuoi, ma senza garanzie.
+[MIT](LICENSE) — do what you like with it, no warranty of any kind.
 
 ---
 
-WallYeah non è un consulente finanziario: è un quaderno dove segni i tuoi numeri.
-Le cifre che mostra valgono quanto quelle che ci inserisci.
+WallYeah isn't a financial advisor: it's a notebook you write your numbers in. What it
+shows you is only as good as what you put in.

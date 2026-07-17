@@ -2,15 +2,18 @@
   "name": "WallYeah — Portafoglio investimenti",
   "short_name": "WallYeah",
   "description": "Tieni traccia del tuo portafoglio: azioni, ETF, fondi, obbligazioni, titoli di stato, crypto e liquidità. I dati restano sul tuo dispositivo.",
+  "id": "/wallyeah/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#0b1420",
   "theme_color": "#0b1420",
   "lang": "it",
   "dir": "ltr",
   "categories": ["finance", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icone/icona-192.png",

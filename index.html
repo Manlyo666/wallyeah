@@ -351,6 +351,7 @@
   .card-summary .cs-tot.cs-solo{margin-left:auto;} /* liquidità: unico valore, ancorato a destra */
   .card-summary .cs-carico{font-size:.66rem; color:var(--muted); margin-top:.1rem;}
   .card-summary .cs-perc{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.86rem; flex:0 0 auto; min-width:3.2rem; text-align:right;}
+  .card-summary .cs-perc.cs-solo{margin-left:auto;} /* card chiusa: unico valore, a destra */
   .card-summary .cs-perc.pos{color:var(--green);} .card-summary .cs-perc.neg{color:var(--red);} .card-summary .cs-perc.zero{color:var(--muted);}
   .card.collapsed{padding-top:.7rem; padding-bottom:.7rem;}
   .card-body{margin-top:.7rem;}
@@ -501,6 +502,11 @@
       <p>Scarica lo storico come foglio Excel (.xlsx), in due versioni: <b>Per voce</b> (una riga per titolo, le date in colonna) e <b>Per data</b> (una riga per istantanea). Si apre anche con Fogli Google e LibreOffice.</p>
       <button class="set-btn" id="exportSettingsBtn">Esporta storico in Excel</button>
     </div>
+    <div class="set-card" id="installCard" style="display:none">
+      <h3>Installa l'app</h3>
+      <p>Aggiungi WallYeah alla schermata Home: si apre a schermo intero, senza la barra del browser, e funziona anche senza connessione.</p>
+      <button class="set-btn" id="installBtn">Installa WallYeah</button>
+    </div>
     <div class="set-card">
       <h3>Aggiornamenti</h3>
       <p>Stai usando la versione <b id="verNum">—</b>. <span id="verModo"></span></p>
@@ -529,6 +535,14 @@
 // nel browser del telefono (o pubblicato online). Nell'anteprima
 // di alcuni editor/chat potrebbe non persistere: è normale.
 // =========================================================
+// Chrome avvisa quando l'app è installabile: intercetto l'evento e mostro un pulsante
+// dentro l'app. Senza, la voce "Installa" resta nascosta nel menu del browser, e chi non
+// la trova usa "Aggiungi a schermata Home", che è un'altra cosa: crea una scorciatoia
+// che apre Chrome con la barra degli indirizzi invece dell'app a schermo intero.
+// Dichiarata qui in cima perché le Impostazioni possono leggerla prima che il resto del
+// codice venga eseguito (let non viene sollevato come le funzioni).
+let promptInstalla = null;
+
 const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
@@ -1443,8 +1457,13 @@ function vociCardHTML(schedaId, v){
   if(cm === 'importo'){
     // Liquidità: solo il saldo (cs-solo lo tiene ancorato a destra, come gli altri tipi)
     summaryVals = `<span class="cs-tot cs-solo">${eur(val.attuale)}</span>`;
+  } else if(!cardOpen){
+    // Card CHIUSA: sullo schermo di un telefono non ci sta tutto. Il nome della voce è
+    // l'informazione che serve per trovarla, quindi gli lascio lo spazio e mostro solo
+    // il guadagno: importi, versato e quote si leggono aprendo la card.
+    summaryVals = `<span class="cs-perc ${gClass(g)} cs-solo">${pct(gp)}</span>`;
   } else {
-    // riga sotto: versato + quote (solo per i tipi a quantità: azioni, ETF, fondi, crypto)
+    // Card APERTA: qui c'è spazio, mostro anche valore, versato e quote
     const mostraQ = (cm === 'qp' && v.qty != null && v.qty !== '');
     const qLbl = v.tipo==='azioni' ? 'az.' : (v.tipo==='crypto' ? 'coin' : 'quote');
     const quoteTxt = mostraQ
@@ -3622,6 +3641,9 @@ function wireSettings(){
   }
   const cu = document.getElementById('checkUpdBtn');
   if(cu) cu.onclick = cercaAggiornamenti;
+  const ib = document.getElementById('installBtn');
+  if(ib) ib.onclick = installaApp;
+  mostraPulsanteInstalla(); // la card appare solo se il browser dice che è installabile
 
   // promemoria
   const rsel = document.getElementById('reminderSelect');
@@ -3782,6 +3804,33 @@ if(!state.setupDone){ openWizard(true); }
 // va fatto scaricando a mano il file nuovo.
 // =========================================================
 let swReg = null;
+
+function mostraPulsanteInstalla(){
+  const card = document.getElementById('installCard');
+  if(card) card.style.display = promptInstalla ? '' : 'none';
+}
+
+window.addEventListener('beforeinstallprompt', (ev)=>{
+  ev.preventDefault();      // blocco il banner automatico di Chrome
+  promptInstalla = ev;      // me lo tengo per quando l'utente preme il pulsante
+  mostraPulsanteInstalla();
+});
+window.addEventListener('appinstalled', ()=>{
+  promptInstalla = null;
+  mostraPulsanteInstalla();
+});
+
+async function installaApp(ev){
+  if(!promptInstalla){
+    await askConfirm("Installazione non disponibile",
+      "Il browser non propone l'installazione. Su Android usa il menu ⋮ → \"Installa app\"; su iPhone il tasto Condividi → \"Aggiungi a Home\".",
+      "Ho capito");
+    return;
+  }
+  promptInstalla.prompt();
+  const esito = await promptInstalla.userChoice;
+  if(esito && esito.outcome === 'accepted'){ promptInstalla = null; mostraPulsanteInstalla(); }
+}
 
 function mostraBarraAggiornamento(){
   if(document.getElementById('updBar')) return;
