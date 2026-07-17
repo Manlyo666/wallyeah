@@ -12,6 +12,9 @@ registrazione. WallYeah non raccoglie nulla e non manda niente da nessuna parte.
 
 👉 **[Apri WallYeah](https://Manlyo666.github.io/wallyeah/)**
 
+L'interfaccia è disponibile in **italiano e inglese**: scegli la lingua al primo avvio,
+e puoi cambiarla quando vuoi da *Impostazioni → Lingua*.
+
 Per usarla come una vera app (anche senza connessione):
 
 - **Android / Chrome** — menu ⋮ → *Installa app*

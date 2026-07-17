@@ -8,7 +8,8 @@ government bonds, crypto, cash, and whatever else you want to keep an eye on.
 **Your data never leaves your device.** No account, no server, no sign-up. WallYeah
 collects nothing and sends nothing anywhere.
 
-> The interface is in Italian.
+The interface is available in **English and Italian**. You pick the language when you
+first open the app, and you can change it any time from *Settings → Language*.
 
 ## Try it
 
@@ -20,10 +21,10 @@ To use it as a real app (offline included):
 - **iPhone / Safari** — Share button → *Add to Home Screen*
 - **Desktop** — the install icon in the address bar
 
-Or, once it's open: **Impostazioni → Installa l'app**.
+Or, once it's open: **Settings → Install the app**.
 
 Once installed it updates itself: when a new version is out, a bar shows up at the
-bottom, you tap *Aggiorna*, and that's it.
+bottom, you tap *Update*, and that's it.
 
 ## What it does
 

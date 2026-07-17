@@ -97,10 +97,10 @@
   /* Il campo si dimensiona sul testo che contiene (attributo size), non prendendosi tutto
      lo spazio: un nome corto occupa poco, uno lungo cresce fino al massimo e poi scorre
      internamente, senza mai schiacciare i valori a destra. */
-  .card-summary input.cs-nome-input{flex:0 1 auto; min-width:4rem; max-width:min(60%, 22rem);
+  .card-summary input.cs-nome-input{flex:0 1 auto; min-width:3rem; max-width:50%; width:50%;
     background:transparent; border:none;
     border-bottom:1px dashed var(--border); color:var(--text); font-family:'Space Grotesk',sans-serif;
-    font-size:.9rem; font-weight:600; padding:0 0 1px; transition:border-color .15s;}
+    font-size:.88rem; font-weight:600; padding:0 0 1px; transition:border-color .15s;}
   .card-summary input.cs-nome-input:focus{border-bottom-color:var(--gold); outline:none;}
   .card-summary input.cs-nome-input::placeholder{color:var(--gold-soft); opacity:.7;}
   /* descrizione: il nome completo del titolo, per ricordarsi qual è. Facoltativa. */
@@ -271,6 +271,24 @@
   .wiz-actions{margin-top:1.3rem;}
   .wiz-actions .snap-btn{margin-top:0;}
   .wiz-hint{font-size:.74rem; color:var(--muted); text-align:center; margin-top:.8rem; line-height:1.4;}
+  /* selettore lingua: due pulsanti affiancati, in cima a tutto perché è la prima scelta
+     da fare — il resto del wizard va letto già nella lingua giusta. */
+  .wiz-lang-row{display:flex; gap:.5rem; margin-bottom:1rem;}
+  .wiz-lang{flex:1; display:flex; align-items:center; justify-content:center; gap:.45rem;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:.85rem; font-weight:600;
+    padding:.6rem .5rem; cursor:pointer; transition:border-color .15s, color .15s, background .15s;}
+  .wiz-lang.on{border-color:var(--gold); background:var(--surface-2); color:var(--text);}
+  .wiz-lang .wl-flag{font-size:1.05rem;}
+  .wiz-import{background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:.85rem .85rem .9rem; margin-bottom:1.1rem;}
+  .wiz-import-head{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.9rem; margin-bottom:.55rem;}
+  .wiz-import .ghost-btn{margin-top:0; width:100%;}
+  .wiz-msg{font-size:.75rem; margin:.55rem 0 0; text-align:center; line-height:1.4;}
+  .wiz-msg.ok{color:var(--green);} .wiz-msg.err{color:var(--red);}
+  /* separatore "oppure": la riga orizzontale con il testo al centro */
+  .wiz-sep{display:flex; align-items:center; gap:.6rem; margin:.9rem 0 0; color:var(--muted); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em;}
+  .wiz-sep::before, .wiz-sep::after{content:''; flex:1; height:1px; background:var(--border);}
 
   /* Impostazioni */
   .set-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; margin-bottom:.8rem;}
@@ -337,22 +355,45 @@
      della riga (o dentro il campo nome) non fa più partire il trascinamento per sbaglio */
   .card-summary .cs-grip{flex:0 0 auto; color:var(--muted); opacity:.4; font-size:.95rem;
     letter-spacing:-2px; line-height:1; cursor:grab; padding:.4rem .2rem; margin:-.4rem -.05rem -.4rem -.25rem;
-    touch-action:none; -webkit-user-select:none; user-select:none;}
-  .card-summary .cs-grip:hover{opacity:1; color:var(--gold-soft);}
-  .card-summary .cs-grip:active{cursor:grabbing; color:var(--gold);}
+    touch-action:none; -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;}
+  /* L'evidenziazione al passaggio del mouse vale solo dove un mouse esiste davvero: su
+     touch :hover resta incollato dopo il tap e la maniglia sembra "rimasta selezionata". */
+  @media (hover:hover) and (pointer:fine){
+    .card-summary .cs-grip:hover{opacity:1; color:var(--gold-soft);}
+  }
+  /* Stato "in presa": lo mette e lo toglie il JS, così sparisce di sicuro al rilascio. */
+  .card-summary .cs-grip.grabbing{opacity:1; cursor:grabbing; color:var(--gold);}
+  .card-summary .cs-grip:focus{outline:none;}
+  .card-summary .cs-grip:focus-visible{outline:2px solid var(--gold-soft); outline-offset:2px; border-radius:4px;}
   .card-summary .cs-chevron{color:var(--muted); font-size:.8rem; width:.9rem; flex:0 0 auto;}
   .card-summary .cs-badge{width:1.5rem; height:1.5rem; display:flex; align-items:center; justify-content:center; border-radius:7px; font-size:.9rem; flex:0 0 auto;}
-  .card-summary .cs-nome{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.9rem;}
+  /* Il nome non supera MAI metà riga: oltre quella soglia tronca con l'ellissi. Il nome
+     completo sta nel campo esteso della card aperta, qui basta riconoscere la voce
+     ("Amundi MSCI Emer…"). Così i numeri a destra hanno sempre il loro spazio garantito
+     e non escono dall'impaginazione, aperta o chiusa che sia. */
+  .card-summary .cs-nome{flex:0 1 auto; min-width:0; max-width:50%;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.88rem;}
   .card-summary .cs-nome .noname{color:var(--muted); font-weight:400; font-style:italic;}
   /* margin-left:auto = assorbe lo spazio libero, tenendo i valori ancorati a destra
      qualunque sia la larghezza del nome (che ora si dimensiona sul suo contenuto) */
-  .card-summary .cs-money{display:flex; flex-direction:column; align-items:flex-end; line-height:1.1; flex:0 0 auto; margin-left:auto;}
-  .card-summary .cs-tot{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.86rem;}
+  .card-summary .cs-money{display:flex; flex-direction:column; align-items:flex-end; line-height:1.15; flex:0 1 auto; min-width:0; margin-left:auto;}
+  .card-summary .cs-tot{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.78rem; white-space:nowrap;}
   .card-summary .cs-tot.cs-solo{margin-left:auto;} /* liquidità: unico valore, ancorato a destra */
-  .card-summary .cs-carico{font-size:.66rem; color:var(--muted); margin-top:.1rem;}
-  .card-summary .cs-perc{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.86rem; flex:0 0 auto; min-width:3.2rem; text-align:right;}
+  /* riga secondaria: versato e quote. Tronca per prima, è il dato meno urgente. */
+  .card-summary .cs-carico{font-size:.62rem; color:var(--muted); margin-top:.05rem;
+    max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .card-summary .cs-perc{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.78rem; flex:0 0 auto; min-width:2.9rem; text-align:right; white-space:nowrap;}
   .card-summary .cs-perc.cs-solo{margin-left:auto;} /* card chiusa: unico valore, a destra */
   .card-summary .cs-perc.pos{color:var(--green);} .card-summary .cs-perc.neg{color:var(--red);} .card-summary .cs-perc.zero{color:var(--muted);}
+  /* Schermi molto stretti: comprimo ancora un po' e stringo le spaziature. */
+  @media (max-width:360px){
+    .card-summary{gap:.4rem;}
+    .card-summary .cs-tot{font-size:.74rem;}
+    .card-summary .cs-carico{font-size:.58rem;}
+    .card-summary .cs-perc{font-size:.74rem; min-width:2.6rem;}
+  }
   .card.collapsed{padding-top:.7rem; padding-bottom:.7rem;}
   .card-body{margin-top:.7rem;}
 
@@ -420,19 +461,19 @@
 <header class="top">
   <div class="brand-row">
     <img class="brand-banner" src="data:image/png;base64,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" alt="WallYeah">
-    <button class="snap-quick" id="snapQuickBtn" title="Registra i valori di oggi nello storico">
-      <span class="sq-ico">📸</span><span class="sq-lbl">Istantanea</span>
+    <button class="snap-quick" id="snapQuickBtn" data-i18n-title="ui.snapTitle" title="Registra i valori di oggi nello storico">
+      <span class="sq-ico">📸</span><span class="sq-lbl" data-i18n="ui.snap">Istantanea</span>
     </button>
   </div>
-  <p class="eyebrow">Patrimonio totale</p>
+  <p class="eyebrow" data-i18n="ui.patrimonio">Patrimonio totale</p>
   <div class="total-row">
     <span class="total-value num" id="totAttuale">€ 0</span>
     <span class="delta zero" id="totDelta">0%</span>
-    <span class="delta-note">su investimenti</span>
+    <span class="delta-note" data-i18n="ui.suInv">su investimenti</span>
   </div>
   <div class="sub-row">
-    <span>Versato <b id="totCarico">€0</b></span>
-    <span>Guadagno inv. <b id="totGuadagno">€0</b></span>
+    <span><span data-i18n="ui.versato">Versato</span> <b id="totCarico">€0</b></span>
+    <span><span data-i18n="ui.guadagnoInv">Guadagno inv.</span> <b id="totGuadagno">€0</b></span>
   </div>
 </header>
 
@@ -443,79 +484,84 @@
 
 <main>
   <section class="panel active" id="panel-riepilogo">
-    <div class="panel-head"><div><h2>Riepilogo</h2><p>Vista d'insieme, calcolata da sola</p></div></div>
+    <div class="panel-head"><div><h2 data-i18n="ui.riepilogo">Riepilogo</h2><p data-i18n="ui.riepilogoSub">Vista d'insieme, calcolata da sola</p></div></div>
     <table class="riepilogo">
-      <thead><tr><th>Scheda</th><th style="text-align:right">Versato</th><th style="text-align:right">Attuale</th><th style="text-align:right">Guadagno</th></tr></thead>
+      <thead><tr><th data-i18n="ui.scheda">Scheda</th><th style="text-align:right" data-i18n="ui.versato">Versato</th><th style="text-align:right" data-i18n="ui.attuale">Attuale</th><th style="text-align:right" data-i18n="ui.guadagno">Guadagno</th></tr></thead>
       <tbody id="riepilogoBody"></tbody>
     </table>
     <div class="chart-card" id="allocCard" style="margin-top:1rem; display:none">
-      <div class="section-label" style="margin-top:0">Ripartizione del patrimonio</div>
+      <div class="section-label" style="margin-top:0" data-i18n="ui.ripartizione">Ripartizione del patrimonio</div>
       <canvas id="allocCanvas" style="height:210px"></canvas>
       <div class="chart-legend" id="allocLegend"></div>
     </div>
   </section>
 
   <section class="panel" id="panel-storico">
-    <div class="panel-head"><div><h2>Storico</h2><p>Salva un'istantanea quando vuoi</p></div></div>
-    <button class="snap-btn" id="snapBtn">Salva l'istantanea di oggi</button>
-    <p class="hint">Registra i valori di oggi di ogni voce e il totale, con la data odierna: è quello che alimenta i grafici. Puoi salvare più volte al mese; registrare due volte lo stesso giorno aggiorna il punto invece di duplicarlo. <b>Non è un backup</b>: i tuoi dati sono già salvati da soli, e la copia di sicurezza si scarica dalle Impostazioni.</p>
+    <div class="panel-head"><div><h2 data-i18n="ui.storico">Storico</h2><p data-i18n="ui.storicoSub">Salva un'istantanea quando vuoi</p></div></div>
+    <button class="snap-btn" id="snapBtn" data-i18n="ui.salvaSnap">Salva l'istantanea di oggi</button>
+    <p class="hint" data-i18n-html="ui.snapHint">Registra i valori di oggi di ogni voce e il totale, con la data odierna: è quello che alimenta i grafici. Puoi salvare più volte al mese; registrare due volte lo stesso giorno aggiorna il punto invece di duplicarlo. <b>Non è un backup</b>: i tuoi dati sono già salvati da soli, e la copia di sicurezza si scarica dalle Impostazioni.</p>
     <div class="storico-filter">
-      <label>Mostra</label>
+      <label data-i18n="ui.mostra">Mostra</label>
       <select class="voce-select" id="storicoFiltro"></select>
     </div>
     <div class="storico-list" id="storicoList"></div>
   </section>
 
   <section class="panel" id="panel-grafici">
-    <div class="panel-head"><div><h2>Grafici</h2><p>Andamento nel tempo, per voce o a confronto</p></div></div>
+    <div class="panel-head"><div><h2 data-i18n="ui.grafici">Grafici</h2><p data-i18n="ui.graficiSub">Andamento nel tempo, per voce o a confronto</p></div></div>
     <div id="graficiContent"></div>
   </section>
 
   <section class="panel" id="panel-impostazioni">
-    <div class="panel-head"><div><h2>Impostazioni</h2><p>Configurazione dell'app</p></div></div>
+    <div class="panel-head"><div><h2 data-i18n="ui.impostazioni">Impostazioni</h2><p data-i18n="ui.impostazioniSub">Configurazione dell'app</p></div></div>
     <div class="set-card">
-      <h3>Promemoria di aggiornamento</h3>
-      <p>WallYe non può inviare notifiche quando è chiuso (limite delle app WebView). Ti mostra invece un promemoria alla riapertura, se è passato il tempo scelto dall'ultimo salvataggio nello Storico.</p>
+      <h3 data-i18n="ui.promemoria">Promemoria di aggiornamento</h3>
+      <p data-i18n-html="ui.promemoriaSub">WallYe non può inviare notifiche quando è chiuso (limite delle app WebView). Ti mostra invece un promemoria alla riapertura, se è passato il tempo scelto dall'ultimo salvataggio nello Storico.</p>
       <select class="voce-select" id="reminderSelect"></select>
     </div>
     <div class="set-card">
-      <h3>Schede iniziali</h3>
-      <p>Rilancia la procedura guidata per aggiungere le tipologie di scheda che ti mancano. Le schede e i dati che hai già inserito restano intatti.</p>
-      <button class="set-btn" id="rerunWizardBtn">Rilancia la configurazione guidata</button>
+      <h3 data-i18n="set.lingua">Lingua</h3>
+      <p data-i18n="set.linguaDesc">Scegli la lingua dell'interfaccia.</p>
+      <div class="wiz-lang-row" id="setLangRow"></div>
     </div>
     <div class="set-card">
-      <h3>Ordine delle schede</h3>
-      <p>Tieni premuto su una scheda e trascinala per cambiarne la posizione. L'ordine si riflette subito nelle linguette in alto.</p>
+      <h3 data-i18n="ui.schedeIniziali">Schede iniziali</h3>
+      <p data-i18n-html="ui.schedeInizialiSub">Rilancia la procedura guidata per aggiungere le tipologie di scheda che ti mancano. Le schede e i dati che hai già inserito restano intatti.</p>
+      <button class="set-btn" id="rerunWizardBtn" data-i18n="ui.rerunWizard">Rilancia la configurazione guidata</button>
+    </div>
+    <div class="set-card">
+      <h3 data-i18n="set.ordine">Ordine delle schede</h3>
+      <p data-i18n="set.ordineSub">Tieni premuto su una scheda e trascinala per cambiarne la posizione.</p>
       <div class="reorder-list" id="reorderList"></div>
-      <button class="set-btn" id="reorderBtn" style="margin-top:.6rem">Ripristina ordine per importanza</button>
+      <button class="set-btn" id="reorderBtn" style="margin-top:.6rem" data-i18n="set.ordineBtn">Ripristina ordine per importanza</button>
     </div>
     <div class="set-card">
-      <h3>Backup completo</h3>
-      <p>Salva un file con tutto: schede, voci e storico. Puoi condividerlo (per esempio salvarlo su Google Drive dal menu di Android) oppure scaricarlo, e reimportarlo quando vuoi.</p>
-      <button class="set-btn" id="backupShareBtn">Condividi / salva su Drive</button>
-      <button class="set-btn" id="backupExportBtn" style="margin-top:.5rem">Scarica il file (.json)</button>
-      <button class="set-btn" id="backupImportBtn" style="margin-top:.5rem">Importa backup (.json)</button>
+      <h3 data-i18n="set.backup">Backup completo</h3>
+      <p data-i18n="set.backupSub">Salva un file con tutto: schede, voci e storico.</p>
+      <button class="set-btn" id="backupShareBtn" data-i18n="set.backupShare">Condividi / salva su Drive</button>
+      <button class="set-btn" id="backupExportBtn" style="margin-top:.5rem" data-i18n="set.backupDl">Scarica il file (.json)</button>
+      <button class="set-btn" id="backupImportBtn" style="margin-top:.5rem" data-i18n="set.backupImp">Importa backup (.json)</button>
       <input type="file" id="backupFile" accept="application/json,.json" style="display:none">
     </div>
     <div class="set-card">
-      <h3>Esporta storico</h3>
-      <p>Scarica lo storico come foglio Excel (.xlsx), in due versioni: <b>Per voce</b> (una riga per titolo, le date in colonna) e <b>Per data</b> (una riga per istantanea). Si apre anche con Fogli Google e LibreOffice.</p>
-      <button class="set-btn" id="exportSettingsBtn">Esporta storico in Excel</button>
+      <h3 data-i18n="set.export">Esporta storico</h3>
+      <p data-i18n-html="set.exportSub">Scarica lo storico come foglio Excel (.xlsx).</p>
+      <button class="set-btn" id="exportSettingsBtn" data-i18n="js.exportXlsx">Esporta storico in Excel</button>
     </div>
     <div class="set-card" id="installCard" style="display:none">
-      <h3>Installa l'app</h3>
-      <p>Aggiungi WallYeah alla schermata Home: si apre a schermo intero, senza la barra del browser, e funziona anche senza connessione.</p>
-      <button class="set-btn" id="installBtn">Installa WallYeah</button>
+      <h3 data-i18n="set.install">Installa l'app</h3>
+      <p data-i18n="set.installSub">Aggiungi WallYeah alla schermata Home.</p>
+      <button class="set-btn" id="installBtn" data-i18n="set.installBtn">Installa WallYeah</button>
     </div>
     <div class="set-card">
-      <h3>Aggiornamenti</h3>
-      <p>Stai usando la versione <b id="verNum">—</b>. <span id="verModo"></span></p>
-      <button class="set-btn" id="checkUpdBtn">Cerca aggiornamenti</button>
+      <h3 data-i18n="set.updates">Aggiornamenti</h3>
+      <p><span data-i18n="set.verPrefix">Stai usando la versione</span> <b id="verNum">—</b>. <span id="verModo"></span></p>
+      <button class="set-btn" id="checkUpdBtn" data-i18n="set.updBtn">Cerca aggiornamenti</button>
     </div>
     <div class="set-card">
-      <h3>Azzera tutto</h3>
-      <p>Elimina definitivamente ogni scheda, voce e snapshot, e riparte dalla configurazione guidata. Operazione irreversibile.</p>
-      <button class="set-btn danger" id="resetAllBtn">Azzera l'intero portafoglio</button>
+      <h3 data-i18n="set.reset">Azzera tutto</h3>
+      <p data-i18n="set.resetSub">Elimina definitivamente ogni scheda, voce e snapshot.</p>
+      <button class="set-btn danger" id="resetAllBtn" data-i18n="set.resetBtn">Azzera l'intero portafoglio</button>
     </div>
   </section>
 </main>
@@ -543,11 +589,512 @@
 // codice venga eseguito (let non viene sollevato come le funzioni).
 let promptInstalla = null;
 
+
+// =========================================================
+// LINGUA (i18n)
+// =========================================================
+// Le chiavi dei tipi ('azioni', 'etf', 'obblig'…) restano in italiano: sono DATI, finiscono
+// nel backup JSON e nei salvataggi già esistenti. Qui si traducono solo le etichette che
+// l'utente legge, così un backup fatto in italiano si riapre in inglese senza perdere nulla.
+const LANG_KEY = "wallyeah_lang";
+const LANGS = { it:{ label:'Italiano', flag:'🇮🇹', locale:'it-IT' },
+                en:{ label:'English',  flag:'🇬🇧', locale:'en-GB' } };
+
+function detectLang(){
+  try{
+    const saved = localStorage.getItem(LANG_KEY);
+    if(saved && LANGS[saved]) return saved;
+  }catch(e){}
+  const nav = (navigator.language || 'it').slice(0,2).toLowerCase();
+  return nav === 'it' ? 'it' : 'en';
+}
+let LANG = detectLang();
+function setLang(l){
+  if(!LANGS[l]) return;
+  LANG = l;
+  try{ localStorage.setItem(LANG_KEY, l); }catch(e){}
+  document.documentElement.lang = l;
+}
+function locale(){ return LANGS[LANG].locale; }
+
+const I18N = {
+  it: {
+    'u.az':'az.', 'u.coin':'coin', 'u.quote':'quote',
+    'cs.vers':'vers.', 'cs.noname':'Senza nome',
+    'ph.nomeBreve':'Nome breve…',
+    'grip.title':'Trascina per riordinare',
+
+    // tipi
+    'tipo.azioni':'Azioni', 'tipo.azioni.desc':'Singoli titoli azionari quotati.',
+    'tipo.etf':'ETF', 'tipo.etf.desc':'Fondi a gestione passiva quotati in borsa.',
+    'tipo.fondi':'Fondi', 'tipo.fondi.desc':'Fondi comuni a gestione attiva.',
+    'tipo.obblig':'Obbligazioni', 'tipo.obblig.desc':'Obbligazioni societarie a reddito fisso.',
+    'tipo.titoli':'Titoli di Stato', 'tipo.titoli.desc':'BTP, BOT e titoli governativi.',
+    'tipo.crypto':'Crypto', 'tipo.crypto.desc':'Coin e token: quantità frazionabile.',
+    'tipo.liquid':'Liquidità', 'tipo.liquid.desc':'Conti, contanti, depositi.',
+    'tipo.perso':'Personalizzato', 'tipo.perso.desc':'Scegli tu i campi e le etichette.',
+    'lbl.qtyAzioni':'Quantità (azioni)', 'lbl.quote':'Quote', 'lbl.qtyCoin':'Quantità coin',
+    'lbl.prezzoCarico':'Prezzo medio di carico', 'lbl.prezzoAttuale':'Prezzo attuale',
+    'lbl.navCarico':'NAV medio di carico', 'lbl.navAttuale':'NAV attuale',
+
+    // wizard
+    'wiz.benvenuto':'Benvenuto', 'wiz.aggiungi':'Aggiungi schede',
+    'wiz.leadFirst':'Scegli quali tipologie di scheda vuoi nel tuo portafoglio. Potrai aggiungerne, rinominarle o eliminarne in qualsiasi momento.',
+    'wiz.leadMore':'Seleziona le tipologie da aggiungere. Quelle che hai già create restano intatte.',
+    'wiz.crea':'Crea il portafoglio', 'wiz.aggiungiSel':'Aggiungi le schede selezionate',
+    'wiz.skipFirst':'Parto da zero, li aggiungo dopo', 'wiz.annulla':'Annulla',
+    'wiz.hint':'Ogni tipologia ha campi su misura: azioni ed ETF usano quantità × prezzo, le obbligazioni il corso percentuale, la liquidità un semplice importo.',
+    'wiz.gia':' · già presente',
+    'wiz.lingua':'Lingua', 'wiz.linguaHint':'Puoi cambiarla quando vuoi dalle impostazioni.',
+    'wiz.importa':'Hai già un backup?',
+    'wiz.importaBtn':'Importa backup (.json)',
+    'wiz.importaHint':'Riprendi da dove avevi lasciato: carica il file .json esportato dall’app.',
+    'wiz.importOk':'Backup caricato: {n} schede ripristinate.',
+    'wiz.importErr':'File non valido: non sembra un backup di WallYeah.',
+    'wiz.oppure':'oppure parti da zero',
+
+    // settings
+    "ui.snapTitle":"Registra i valori di oggi nello storico",
+    "ui.snap":"Istantanea",
+    "ui.patrimonio":"Patrimonio totale",
+    "ui.suInv":"su investimenti",
+    "ui.versato":"Versato",
+    "ui.guadagnoInv":"Guadagno inv.",
+    "ui.riepilogo":"Riepilogo",
+    "ui.riepilogoSub":"Vista d'insieme, calcolata da sola",
+    "ui.scheda":"Scheda",
+    "ui.attuale":"Attuale",
+    "ui.guadagno":"Guadagno",
+    "ui.ripartizione":"Ripartizione del patrimonio",
+    "ui.storico":"Storico",
+    "ui.storicoSub":"Salva un'istantanea quando vuoi",
+    "ui.salvaSnap":"Salva l'istantanea di oggi",
+    "ui.snapHint":"Registra i valori di oggi di ogni voce e il totale, con la data odierna: è quello che alimenta i grafici. Puoi salvare più volte al mese; registrare due volte lo stesso giorno aggiorna il punto invece di duplicarlo. <b>Non è un backup</b>: i tuoi dati sono già salvati da soli, e la copia di sicurezza si scarica dalle Impostazioni.",
+    "ui.mostra":"Mostra",
+    "ui.grafici":"Grafici",
+    "ui.graficiSub":"Andamento nel tempo, per voce o a confronto",
+    "ui.impostazioni":"Impostazioni",
+    "ui.impostazioniSub":"Configurazione dell'app",
+    "ui.promemoria":"Promemoria di aggiornamento",
+    "ui.promemoriaSub":"WallYe non può inviare notifiche quando è chiuso (limite delle app WebView). Ti mostra invece un promemoria alla riapertura, se è passato il tempo scelto dall'ultimo salvataggio nello Storico.",
+    "ui.schedeIniziali":"Schede iniziali",
+    "ui.schedeInizialiSub":"Rilancia la procedura guidata per aggiungere le tipologie di scheda che ti mancano. Le schede e i dati che hai già inserito restano intatti.",
+    "ui.rerunWizard":"Rilancia la configurazione guidata",
+    "js.annulla":"Annulla",
+    "js.cadenza":"Cadenza",
+    "js.titoliAccum":"Titoli accum.",
+    "js.versamenti":"Versamenti",
+    "js.versatoPrev":"Versato prev.",
+    "js.prossimo":"Prossimo",
+    "js.prossima":"Prossima",
+    "js.nCedole":"N. cedole",
+    "js.riscosso":"Riscosso",
+    "js.quote":"Quote",
+    "js.aggiorna":"Aggiorna",
+    "js.riepilogo":"Riepilogo",
+    "js.grafici":"Grafici",
+    "js.storico":"Storico",
+    "js.addScheda":"+ Scheda",
+    "js.addVoce":"+ Voce",
+    "js.senzaNome":"Senza nome",
+    "js.importoInv":"Importo investito (€)",
+    "js.rendAnnuo":"Rendimento annuo lordo (%)",
+    "js.modoQp":"Quantità × prezzo",
+    "js.modoBond":"Importo + rendimento",
+    "js.modoImporto":"Importo diretto",
+    "js.rinominaEtich":"Rinomina le etichette (facoltativo)",
+    "js.addCedole":"+ Cedole",
+    "js.cedole":"Cedole",
+    "js.rendimento":"Rendimento",
+    "js.cambiaTipo":"cambia tipo",
+    "js.aImportoFisso":"A importo fisso",
+    "js.aQuantita":"A quantità",
+    "js.titoliPerVers":"Titoli / quote per versamento",
+    "js.prezzoAttuale":"Prezzo attuale",
+    "js.prezzoMedio":"Prezzo medio",
+    "js.prezzoMedioStim":"Prezzo medio d’acquisto stimato",
+    "js.importoPerVers":"Importo per versamento",
+    "js.dataInizio":"Data di inizio",
+    "js.anni":"anni",
+    "js.tassoScaglioni":"Tasso a scaglioni (step-up)",
+    "js.addScaglione":"+ scaglione",
+    "js.tassoUnico":"tasso unico",
+    "js.rendCedola":"Rendimento annuo lordo cedola (%)",
+    "js.dataPrimaCed":"Data prima cedola",
+    "js.totale":"Totale",
+    "js.tuttoPatrim":"Tutto il patrimonio",
+    "js.totPatrim":"Totale patrimonio",
+    "js.noQuote":"(no quote)",
+    "js.periodo":"Periodo",
+    "js.cosaMostrare":"Cosa mostrare",
+    "js.valoreEur":"Valore €",
+    "js.guadagnoPct":"Guadagno %",
+    "js.perAnno":"Per anno",
+    "js.voci":"Voci:",
+    "js.tipoGrafico":"Tipo di grafico",
+    "js.linea":"Linea",
+    "js.candela":"Candela",
+    "js.exportXlsx":"Esporta storico in Excel",
+    "js.dati":"Dati",
+    "js.guadagno":"Guadagno",
+    "js.vsPrima":"Vs prima",
+    "js.anniConclusi":"Anni conclusi",
+    "js.mediaAnnua":"Media annua",
+    "js.migliore":"Migliore",
+    "js.peggiore":"Peggiore",
+    "js.inPositivo":"In positivo",
+    "js.noVoci":"Nessuna voce. Tocca \"+ Voce\" per iniziare.",
+    "js.noSnap":"Ancora nessuna istantanea. Tocca \"Salva l\\'istantanea di oggi\".",
+    "js.noSchedeRiord":"Nessuna scheda da riordinare.",
+    "js.updateDisp":"È disponibile una versione aggiornata.",
+    "js.oraAggiornare":"È ora di aggiornare WallYeah.",
+    "js.maiSnap":"Non hai mai salvato uno snapshot",
+    "js.rivediValori":"Rivedi i valori e salva il mese.",
+    "js.chiudi":"Chiudi",
+    "js.saldoHint":"Il saldo del conto. Usa <b>+</b> per aggiungere un'entrata (es. stipendio) senza riscrivere il totale.",
+    "js.storicoFiltrato":"Storico filtrato. Gli snapshot salvati prima di questo aggiornamento potrebbero non avere il dettaglio per categoria/voce e mostrano “—”.",
+    "js.vociHint":"Selezionandone più di una vengono <b>sommate</b> in un'unica linea. <b>Quote</b> attivo solo con voci a quote e non col Totale.",
+    "js.tassoCambia":"il tasso cambia nel tempo?",
+    "js.vociLbl":"Voci:",
+    "js.cosaMostrareLbl":"Cosa mostrare",
+    "js.tipoGraficoLbl":"Tipo di grafico",
+    "js.lineaLbl":"Linea",
+    "js.candelaLbl":"Candela",
+    "js.perAnnoLbl":"Per anno",
+    "js.quoteLbl":"Quote",
+    "m.expT":"Esportare lo storico in Excel?",
+    "m.expTxt":"Verrà scaricato un file Excel (.xlsx) con {d} e {v}.",
+    "m.nSnap1":"1 istantanea",
+    "m.nSnapN":"{n} istantanee",
+    "m.nVoce1":"1 voce",
+    "m.nVoceN":"{n} voci",
+    "m.esporta":"Esporta",
+    "m.restoreT":"Ripristinare il backup?",
+    "m.restoreTxt":"Il portafoglio attuale verrà sostituito con quello del file ({s}). Operazione irreversibile.",
+    "m.nSched1":"1 scheda",
+    "m.nSchedN":"{n} schede",
+    "m.ripristina":"Ripristina",
+    "m.shareKoAlt":"Il tuo dispositivo non permette di condividere file da qui, così ho scaricato il backup. Puoi caricarlo su Drive manualmente dalla cartella Download.",
+    "m.updNo":"Stai usando WallYeah come file salvato sul dispositivo: in questo caso non può cercare aggiornamenti da solo. Per riceverli automaticamente, apri la versione web e installala dal browser.",
+    "m.installKo":"Il browser non propone l'installazione. Su Android usa il menu ⋮ → “Installa app”; su iPhone il tasto Condividi → “Aggiungi a Home”.",
+    "m.elimScheda":"Eliminare la scheda?",
+    "m.elimSchedaTxt":"“{n}” e tutte le sue voci verranno rimosse.",
+    "m.elimina":"Elimina",
+    "m.elimVoce":"Eliminare la voce?",
+    "m.elimVoceTxt":"“{n}” verrà rimossa dalla scheda.",
+    "m.elimVoceNN":"La voce senza nome verrà rimossa.",
+    "m.tassoUnicoT":"Tornare al tasso unico?",
+    "m.tassoUnico1":"Lo scaglione inserito verrà rimosso.",
+    "m.tassoUnicoN":"I {n} scaglioni inseriti verranno rimossi.",
+    "m.continua":"Continua",
+    "m.hoCapito":"Ho capito",
+    "m.noSnapExp":"Nessuna istantanea da esportare",
+    "m.excelOk":"✓ Excel esportato",
+    "m.excelKoT":"Esportazione non riuscita",
+    "m.excelKo":"Non è stato possibile creare il file Excel su questo dispositivo.",
+    "m.shareKoT":"Condivisione non disponibile",
+    "m.shareKo":"Il tuo dispositivo non permette di condividere file da qui, così ho scaricato il backup. Puoi caricarlo su Drive a mano.",
+    "m.fileOk":"✓ File scaricato",
+    "m.fileKoT":"File non valido",
+    "m.fileKo1":"Il file selezionato non è un backup WallYeah leggibile.",
+    "m.fileKo2":"Non contiene un portafoglio WallYeah.",
+    "m.resetT":"Azzerare tutto?",
+    "m.resetTxt":"Verranno eliminati definitivamente tutte le schede, le voci e gli snapshot dello storico. Non si può annullare.",
+    "m.azzera":"Azzera",
+    "m.installKoT":"Installazione non disponibile",
+    "m.updNoT":"Aggiornamenti non disponibili",
+    "m.noConnT":"Nessuna connessione",
+    "m.noConn":"Serve una connessione a internet per controllare se c'è una versione nuova.",
+    "m.controllo":"Controllo…",
+    "m.aggiornatoT":"Sei aggiornato",
+    "m.aggiornato":"Stai usando la versione {v}, che è l'ultima disponibile.",
+    "m.checkKoT":"Controllo non riuscito",
+    "m.checkKo":"Non è stato possibile verificare la presenza di aggiornamenti. Riprova più tardi.",
+    "js.unaVoce":"1 voce",
+    "js.sommaSel":"somma di {n} selezioni",
+    "js.cedolaPagataHint":"Indica la <b>prima cedola già pagata</b>. Dato informativo: non sommato al patrimonio.",
+    "js.tassoScagAttuale":"Tasso a scaglioni · <b>attuale {t}%</b>",
+    "js.tipCandela":"Disponibile con una sola voce selezionata",
+    "js.tipPerAnno":"Serve almeno un anno solare concluso nello storico",
+    "js.snapSalvata":"✓ Istantanea salvata",
+    "js.tipQuoteGraf":"Disponibile solo con voci a quote dello stesso tipo",
+    "js.noSnapExport":"Non hai ancora salvato nessuna istantanea nello Storico. Salvane almeno una, poi riprova.",
+    'set.lingua':'Lingua',
+    'set.linguaDesc':'Scegli la lingua dell’interfaccia.',
+    "set.ordine":"Ordine delle schede",
+    "set.ordineSub":"Tieni premuto su una scheda e trascinala per cambiarne la posizione. L'ordine si riflette subito nelle linguette in alto.",
+    "set.ordineBtn":"Ripristina ordine per importanza",
+    "set.backup":"Backup completo",
+    "set.backupSub":"Salva un file con tutto: schede, voci e storico. Puoi condividerlo (per esempio salvarlo su Google Drive dal menu di Android) oppure scaricarlo, e reimportarlo quando vuoi.",
+    "set.backupShare":"Condividi / salva su Drive",
+    "set.backupDl":"Scarica il file (.json)",
+    "set.backupImp":"Importa backup (.json)",
+    "set.export":"Esporta storico",
+    "set.exportSub":"Scarica lo storico come foglio Excel (.xlsx), in due versioni: <b>Per voce</b> (una riga per titolo, le date in colonna) e <b>Per data</b> (una riga per istantanea). Si apre anche con Fogli Google e LibreOffice.",
+    "set.install":"Installa l'app",
+    "set.installSub":"Aggiungi WallYeah alla schermata Home: si apre a schermo intero, senza la barra del browser, e funziona anche senza connessione.",
+    "set.installBtn":"Installa WallYeah",
+    "set.updates":"Aggiornamenti",
+    "set.updBtn":"Cerca aggiornamenti",
+    "set.reset":"Azzera tutto",
+    "set.resetSub":"Elimina definitivamente ogni scheda, voce e snapshot, e riparte dalla configurazione guidata. Operazione irreversibile.",
+    "set.resetBtn":"Azzera l'intero portafoglio",
+    "set.verPrefix":"Stai usando la versione",
+  },
+  en: {
+    'u.az':'sh.', 'u.coin':'coin', 'u.quote':'units',
+    'cs.vers':'paid', 'cs.noname':'Unnamed',
+    'ph.nomeBreve':'Short name…',
+    'grip.title':'Drag to reorder',
+
+    'tipo.azioni':'Stocks', 'tipo.azioni.desc':'Individual listed equities.',
+    'tipo.etf':'ETFs', 'tipo.etf.desc':'Passively managed exchange-traded funds.',
+    'tipo.fondi':'Funds', 'tipo.fondi.desc':'Actively managed mutual funds.',
+    'tipo.obblig':'Bonds', 'tipo.obblig.desc':'Fixed-income corporate bonds.',
+    'tipo.titoli':'Government bonds', 'tipo.titoli.desc':'Treasuries and government securities.',
+    'tipo.crypto':'Crypto', 'tipo.crypto.desc':'Coins and tokens: fractional amounts.',
+    'tipo.liquid':'Cash', 'tipo.liquid.desc':'Accounts, cash, deposits.',
+    'tipo.perso':'Custom', 'tipo.perso.desc':'Pick your own fields and labels.',
+    'lbl.qtyAzioni':'Quantity (shares)', 'lbl.quote':'Units', 'lbl.qtyCoin':'Coin amount',
+    'lbl.prezzoCarico':'Average cost price', 'lbl.prezzoAttuale':'Current price',
+    'lbl.navCarico':'Average cost NAV', 'lbl.navAttuale':'Current NAV',
+
+    'wiz.benvenuto':'Welcome', 'wiz.aggiungi':'Add sheets',
+    'wiz.leadFirst':'Choose which kinds of sheet you want in your portfolio. You can add, rename or delete them at any time.',
+    'wiz.leadMore':'Select the kinds to add. The ones you already created stay untouched.',
+    'wiz.crea':'Create my portfolio', 'wiz.aggiungiSel':'Add selected sheets',
+    'wiz.skipFirst':'Start empty, I’ll add them later', 'wiz.annulla':'Cancel',
+    'wiz.hint':'Each kind has tailored fields: stocks and ETFs use quantity × price, bonds use percentage price, cash a simple amount.',
+    'wiz.gia':' · already there',
+    'wiz.lingua':'Language', 'wiz.linguaHint':'You can change it any time in settings.',
+    'wiz.importa':'Already have a backup?',
+    'wiz.importaBtn':'Import backup (.json)',
+    'wiz.importaHint':'Pick up where you left off: load the .json file exported from the app.',
+    'wiz.importOk':'Backup loaded: {n} sheets restored.',
+    'wiz.importErr':'Invalid file: this does not look like a WallYeah backup.',
+    'wiz.oppure':'or start from scratch',
+
+    "ui.snapTitle":"Record today's values in the history",
+    "ui.snap":"Snapshot",
+    "ui.patrimonio":"Total net worth",
+    "ui.suInv":"on investments",
+    "ui.versato":"Paid in",
+    "ui.guadagnoInv":"Inv. gain",
+    "ui.riepilogo":"Overview",
+    "ui.riepilogoSub":"The whole picture, worked out for you",
+    "ui.scheda":"Sheet",
+    "ui.attuale":"Current",
+    "ui.guadagno":"Gain",
+    "ui.ripartizione":"Asset allocation",
+    "ui.storico":"History",
+    "ui.storicoSub":"Save a snapshot whenever you like",
+    "ui.salvaSnap":"Save today's snapshot",
+    "ui.snapHint":"Records today's value for every entry and the total, dated today: this is what feeds the charts. You can save more than once a month; saving twice on the same day updates the point instead of duplicating it. <b>This is not a backup</b>: your data is already saved on its own, and the safety copy is downloaded from Settings.",
+    "ui.mostra":"Show",
+    "ui.grafici":"Charts",
+    "ui.graficiSub":"Performance over time, per entry or compared",
+    "ui.impostazioni":"Settings",
+    "ui.impostazioniSub":"App configuration",
+    "ui.promemoria":"Update reminder",
+    "ui.promemoriaSub":"WallYe cannot send notifications while closed (a WebView app limitation). Instead it shows you a reminder when you reopen it, once the chosen time has passed since your last save in History.",
+    "ui.schedeIniziali":"Starting sheets",
+    "ui.schedeInizialiSub":"Run the guided setup again to add the kinds of sheet you are missing. The sheets and data you already entered stay untouched.",
+    "ui.rerunWizard":"Run guided setup again",
+    "js.annulla":"Cancel",
+    "js.cadenza":"Frequency",
+    "js.titoliAccum":"Units accum.",
+    "js.versamenti":"Contributions",
+    "js.versatoPrev":"Est. paid in",
+    "js.prossimo":"Next",
+    "js.prossima":"Next",
+    "js.nCedole":"Coupons",
+    "js.riscosso":"Received",
+    "js.quote":"Units",
+    "js.aggiorna":"Update",
+    "js.riepilogo":"Overview",
+    "js.grafici":"Charts",
+    "js.storico":"History",
+    "js.addScheda":"+ Sheet",
+    "js.addVoce":"+ Entry",
+    "js.senzaNome":"Unnamed",
+    "js.importoInv":"Amount invested (€)",
+    "js.rendAnnuo":"Gross annual yield (%)",
+    "js.modoQp":"Quantity × price",
+    "js.modoBond":"Amount + yield",
+    "js.modoImporto":"Direct amount",
+    "js.rinominaEtich":"Rename the labels (optional)",
+    "js.addCedole":"+ Coupons",
+    "js.cedole":"Coupons",
+    "js.rendimento":"Yield",
+    "js.cambiaTipo":"change type",
+    "js.aImportoFisso":"Fixed amount",
+    "js.aQuantita":"Fixed quantity",
+    "js.titoliPerVers":"Units per contribution",
+    "js.prezzoAttuale":"Current price",
+    "js.prezzoMedio":"Average price",
+    "js.prezzoMedioStim":"Estimated average purchase price",
+    "js.importoPerVers":"Amount per contribution",
+    "js.dataInizio":"Start date",
+    "js.anni":"years",
+    "js.tassoScaglioni":"Step-up rate",
+    "js.addScaglione":"+ step",
+    "js.tassoUnico":"single rate",
+    "js.rendCedola":"Gross annual coupon rate (%)",
+    "js.dataPrimaCed":"First coupon date",
+    "js.totale":"Total",
+    "js.tuttoPatrim":"Entire portfolio",
+    "js.totPatrim":"Total net worth",
+    "js.noQuote":"(no units)",
+    "js.periodo":"Period",
+    "js.cosaMostrare":"What to show",
+    "js.valoreEur":"Value €",
+    "js.guadagnoPct":"Gain %",
+    "js.perAnno":"Per year",
+    "js.voci":"Entries:",
+    "js.tipoGrafico":"Chart type",
+    "js.linea":"Line",
+    "js.candela":"Candle",
+    "js.exportXlsx":"Export history to Excel",
+    "js.dati":"Data",
+    "js.guadagno":"Gain",
+    "js.vsPrima":"Vs before",
+    "js.anniConclusi":"Completed years",
+    "js.mediaAnnua":"Yearly average",
+    "js.migliore":"Best",
+    "js.peggiore":"Worst",
+    "js.inPositivo":"Positive",
+    "js.noVoci":"No entries yet. Tap \"+ Entry\" to start.",
+    "js.noSnap":"No snapshots yet. Tap \"Save today\\'s snapshot\".",
+    "js.noSchedeRiord":"No sheets to reorder.",
+    "js.updateDisp":"An updated version is available.",
+    "js.oraAggiornare":"Time to update WallYeah.",
+    "js.maiSnap":"You have never saved a snapshot",
+    "js.rivediValori":"Review the values and save this month.",
+    "js.chiudi":"Close",
+    "js.saldoHint":"Your account balance. Use <b>+</b> to add money coming in (e.g. salary) without rewriting the total.",
+    "js.storicoFiltrato":"Filtered history. Snapshots saved before this update may not have per-category or per-entry detail and will show “—”.",
+    "js.vociHint":"Picking more than one <b>adds them up</b> into a single line. <b>Units</b> only works with unit-based entries, not with the Total.",
+    "js.tassoCambia":"does the rate change over time?",
+    "js.vociLbl":"Entries:",
+    "js.cosaMostrareLbl":"What to show",
+    "js.tipoGraficoLbl":"Chart type",
+    "js.lineaLbl":"Line",
+    "js.candelaLbl":"Candle",
+    "js.perAnnoLbl":"Per year",
+    "js.quoteLbl":"Units",
+    "m.expT":"Export history to Excel?",
+    "m.expTxt":"An Excel file (.xlsx) will be downloaded with {d} and {v}.",
+    "m.nSnap1":"1 snapshot",
+    "m.nSnapN":"{n} snapshots",
+    "m.nVoce1":"1 entry",
+    "m.nVoceN":"{n} entries",
+    "m.esporta":"Export",
+    "m.restoreT":"Restore this backup?",
+    "m.restoreTxt":"Your current portfolio will be replaced with the one in the file ({s}). This cannot be undone.",
+    "m.nSched1":"1 sheet",
+    "m.nSchedN":"{n} sheets",
+    "m.ripristina":"Restore",
+    "m.shareKoAlt":"Your device will not let you share files from here, so the backup has been downloaded. You can upload it to Drive yourself from your Downloads folder.",
+    "m.updNo":"You are running WallYeah as a file saved on your device, so it cannot check for updates by itself. To get them automatically, open the web version and install it from your browser.",
+    "m.installKo":"Your browser is not offering to install. On Android use the ⋮ menu → “Install app”; on iPhone tap Share → “Add to Home Screen”.",
+    "m.elimScheda":"Delete this sheet?",
+    "m.elimSchedaTxt":"“{n}” and all its entries will be removed.",
+    "m.elimina":"Delete",
+    "m.elimVoce":"Delete this entry?",
+    "m.elimVoceTxt":"“{n}” will be removed from the sheet.",
+    "m.elimVoceNN":"The unnamed entry will be removed.",
+    "m.tassoUnicoT":"Go back to a single rate?",
+    "m.tassoUnico1":"The step you entered will be removed.",
+    "m.tassoUnicoN":"The {n} steps you entered will be removed.",
+    "m.continua":"Continue",
+    "m.hoCapito":"Got it",
+    "m.noSnapExp":"No snapshot to export",
+    "m.excelOk":"✓ Excel exported",
+    "m.excelKoT":"Export failed",
+    "m.excelKo":"The Excel file could not be created on this device.",
+    "m.shareKoT":"Sharing not available",
+    "m.shareKo":"Your device will not let you share files from here, so the backup has been downloaded instead. You can upload it to Drive yourself.",
+    "m.fileOk":"✓ File downloaded",
+    "m.fileKoT":"Invalid file",
+    "m.fileKo1":"The file you picked is not a readable WallYeah backup.",
+    "m.fileKo2":"It does not contain a WallYeah portfolio.",
+    "m.resetT":"Reset everything?",
+    "m.resetTxt":"Every sheet, entry and snapshot in your history will be permanently deleted. This cannot be undone.",
+    "m.azzera":"Reset",
+    "m.installKoT":"Install not available",
+    "m.updNoT":"Updates not available",
+    "m.noConnT":"No connection",
+    "m.noConn":"You need an internet connection to check whether a new version is available.",
+    "m.controllo":"Checking…",
+    "m.aggiornatoT":"You are up to date",
+    "m.aggiornato":"You are running version {v}, which is the latest available.",
+    "m.checkKoT":"Check failed",
+    "m.checkKo":"Could not check for updates. Please try again later.",
+    "js.unaVoce":"1 entry",
+    "js.sommaSel":"sum of {n} selections",
+    "js.cedolaPagataHint":"Enter the <b>first coupon already paid</b>. For information only: not added to your net worth.",
+    "js.tassoScagAttuale":"Step-up rate · <b>currently {t}%</b>",
+    "js.tipCandela":"Available with a single entry selected",
+    "js.tipPerAnno":"Needs at least one completed calendar year in the history",
+    "js.snapSalvata":"✓ Snapshot saved",
+    "js.tipQuoteGraf":"Only available with unit-based entries of the same type",
+    "js.noSnapExport":"You have not saved any snapshot in History yet. Save at least one, then try again.",
+    'set.lingua':'Language',
+    'set.linguaDesc':'Choose the interface language.',
+    "set.ordine":"Sheet order",
+    "set.ordineSub":"Press and hold a sheet, then drag it to move it. The order shows up straight away in the tabs at the top.",
+    "set.ordineBtn":"Restore order by importance",
+    "set.backup":"Full backup",
+    "set.backupSub":"Saves one file with everything: sheets, entries and history. You can share it (for example save it to Google Drive from the Android menu) or download it, and import it back whenever you like.",
+    "set.backupShare":"Share / save to Drive",
+    "set.backupDl":"Download the file (.json)",
+    "set.backupImp":"Import backup (.json)",
+    "set.export":"Export history",
+    "set.exportSub":"Download your history as an Excel sheet (.xlsx), in two versions: <b>By entry</b> (one row per holding, dates across the columns) and <b>By date</b> (one row per snapshot). It also opens in Google Sheets and LibreOffice.",
+    "set.install":"Install the app",
+    "set.installSub":"Add WallYeah to your Home screen: it opens full screen, without the browser bar, and works offline too.",
+    "set.installBtn":"Install WallYeah",
+    "set.updates":"Updates",
+    "set.updBtn":"Check for updates",
+    "set.reset":"Reset everything",
+    "set.resetSub":"Permanently deletes every sheet, entry and snapshot, and starts again from the guided setup. This cannot be undone.",
+    "set.resetBtn":"Reset the whole portfolio",
+    "set.verPrefix":"You are running version",
+  }
+};
+
+// T('chiave') -> testo nella lingua attiva. Se manca, ripiega sull'italiano e poi sulla
+// chiave stessa: così una traduzione dimenticata si vede subito invece di sparire.
+function T(k, vars){
+  let s = (I18N[LANG] && I18N[LANG][k]) || I18N.it[k] || k;
+  if(vars) for(const [n,v] of Object.entries(vars)) s = s.replace('{'+n+'}', v);
+  return s;
+}
+// Numeri: stessa formattazione, locale corrente (1.234,56 in IT / 1,234.56 in EN)
+function nfmt(v, maxFrac, minFrac){
+  const o = {maximumFractionDigits: maxFrac==null?2:maxFrac};
+  if(minFrac!=null) o.minimumFractionDigits = minFrac;
+  return Number(v).toLocaleString(locale(), o);
+}
+
+// Traduce il markup statico. Il testo italiano resta scritto nell'HTML come fallback:
+// se il JS non parte, la pagina è comunque leggibile invece di mostrare le chiavi.
+function applyI18n(root){
+  const r = root || document;
+  r.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = T(el.dataset.i18n); });
+  // -html: solo per le stringhe del dizionario, che contengono <b> voluti. Nessun input
+  // dell'utente passa di qui.
+  r.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = T(el.dataset.i18nHtml); });
+  r.querySelectorAll('[data-i18n-title]').forEach(el=>{ el.title = T(el.dataset.i18nTitle); });
+  r.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = T(el.dataset.i18nPh); });
+  document.documentElement.lang = LANG;
+}
+
 const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
 // della cache, così un nuovo numero costringe il browser a riscaricare tutto.
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.1.0";
 
 const RANGES = [
   { key:'1m', label:'1 mese', months:1 },
@@ -567,27 +1114,31 @@ const PALETTE = ['#c9a227','#5aa9e6','#34b37a','#e0574c','#b07de0','#e0a45a','#4
 //  pac:    la voce può avere un Piano di Accumulo (versamenti ricorrenti)
 //  cedola: la voce può staccare cedole/dividendi periodici
 // L'ordine di questo oggetto è l'ordine di importanza mostrato ovunque.
+// Le CHIAVI (azioni, etf, …) sono dati e non si toccano mai: stanno nei backup salvati.
+// label/desc/*Label sono getter, così cambiano da sole quando cambia la lingua, senza
+// dover ricostruire l'oggetto né ricaricare la pagina.
+function tipoBase(k, extra){
+  const o = { badge:extra.badge, icon:extra.icon, calcMode:extra.calcMode, pac:extra.pac, cedola:extra.cedola };
+  Object.defineProperty(o, 'label', { get:()=>T('tipo.'+k), enumerable:true });
+  Object.defineProperty(o, 'desc',  { get:()=>T('tipo.'+k+'.desc'), enumerable:true });
+  if(extra.qtyKey)     Object.defineProperty(o, 'qtyLabel',     { get:()=>T(extra.qtyKey), enumerable:true });
+  if(extra.caricoKey)  Object.defineProperty(o, 'caricoLabel',  { get:()=>T(extra.caricoKey), enumerable:true });
+  if(extra.attualeKey) Object.defineProperty(o, 'attualeLabel', { get:()=>T(extra.attualeKey), enumerable:true });
+  return o;
+}
 const TIPI = {
-  azioni: { label:'Azioni', badge:'t-azioni', icon:'📈', calcMode:'qp', pac:true, cedola:true,
-    desc:'Singoli titoli azionari quotati.',
-    qtyLabel:'Quantità (azioni)', caricoLabel:'Prezzo medio di carico', attualeLabel:'Prezzo attuale' },
-  etf: { label:'ETF', badge:'t-azioni', icon:'🗂️', calcMode:'qp', pac:true, cedola:true,
-    desc:'Fondi a gestione passiva quotati in borsa.',
-    qtyLabel:'Quote', caricoLabel:'Prezzo medio di carico', attualeLabel:'Prezzo attuale' },
-  fondi: { label:'Fondi', badge:'t-fondi', icon:'📊', calcMode:'qp', pac:true, cedola:true,
-    desc:'Fondi comuni a gestione attiva.',
-    qtyLabel:'Quote', caricoLabel:'NAV medio di carico', attualeLabel:'NAV attuale' },
-  obblig: { label:'Obbligazioni', badge:'t-obblig', icon:'🏦', calcMode:'bond', pac:false, cedola:true,
-    desc:'Obbligazioni societarie a reddito fisso.' },
-  titoli: { label:'Titoli di Stato', badge:'t-obblig', icon:'🏛️', calcMode:'bond', pac:false, cedola:true,
-    desc:'BTP, BOT e titoli governativi.' },
-  crypto: { label:'Crypto', badge:'t-crypto', icon:'₿', calcMode:'qp', pac:true, cedola:false,
-    desc:'Coin e token: quantità frazionabile.',
-    qtyLabel:'Quantità coin', caricoLabel:'Prezzo medio di carico', attualeLabel:'Prezzo attuale' },
-  liquid: { label:'Liquidità', badge:'t-liquid', icon:'💶', calcMode:'importo', pac:false, cedola:false,
-    desc:'Conti, contanti, depositi.' },
-  perso: { label:'Personalizzato', badge:'t-perso', icon:'⚙️', calcMode:'qp', pac:true, cedola:true,
-    desc:'Scegli tu i campi e le etichette.' },
+  azioni: tipoBase('azioni', { badge:'t-azioni', icon:'📈', calcMode:'qp', pac:true, cedola:true,
+    qtyKey:'lbl.qtyAzioni', caricoKey:'lbl.prezzoCarico', attualeKey:'lbl.prezzoAttuale' }),
+  etf: tipoBase('etf', { badge:'t-azioni', icon:'🗂️', calcMode:'qp', pac:true, cedola:true,
+    qtyKey:'lbl.quote', caricoKey:'lbl.prezzoCarico', attualeKey:'lbl.prezzoAttuale' }),
+  fondi: tipoBase('fondi', { badge:'t-fondi', icon:'📊', calcMode:'qp', pac:true, cedola:true,
+    qtyKey:'lbl.quote', caricoKey:'lbl.navCarico', attualeKey:'lbl.navAttuale' }),
+  obblig: tipoBase('obblig', { badge:'t-obblig', icon:'🏦', calcMode:'bond', pac:false, cedola:true }),
+  titoli: tipoBase('titoli', { badge:'t-obblig', icon:'🏛️', calcMode:'bond', pac:false, cedola:true }),
+  crypto: tipoBase('crypto', { badge:'t-crypto', icon:'₿', calcMode:'qp', pac:true, cedola:false,
+    qtyKey:'lbl.qtyCoin', caricoKey:'lbl.prezzoCarico', attualeKey:'lbl.prezzoAttuale' }),
+  liquid: tipoBase('liquid', { badge:'t-liquid', icon:'💶', calcMode:'importo', pac:false, cedola:false }),
+  perso: tipoBase('perso', { badge:'t-perso', icon:'⚙️', calcMode:'qp', pac:true, cedola:true }),
 };
 // ordine di importanza (per wizard, riepilogo, tab)
 const TIPI_ORDER = ['azioni','etf','fondi','obblig','titoli','crypto','liquid','perso'];
@@ -842,14 +1393,14 @@ function toggleOpen(kind, id, def){
 
 // ---------- Helpers numerici ----------
 function n(v){ const x = parseFloat(v); return isNaN(x) ? 0 : x; }
-function eur(v){ return "€ " + (Math.round(v*100)/100).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function eur(v){ return "€ " + (Math.round(v*100)/100).toLocaleString(locale(), {minimumFractionDigits:2, maximumFractionDigits:2}); }
 // Importo in forma compatta per gli spazi stretti (etichette sui grafici):
 // 1.234 → "1,2k", 1.234.567 → "1,23M", 87 → "87"
 function eurCompatto(v){
   const a = Math.abs(v);
-  if(a >= 1000000) return (v/1000000).toLocaleString('it-IT',{maximumFractionDigits:2})+'M';
-  if(a >= 1000)    return (v/1000).toLocaleString('it-IT',{maximumFractionDigits:1})+'k';
-  return Math.round(v).toLocaleString('it-IT');
+  if(a >= 1000000) return (v/1000000).toLocaleString(locale(),{maximumFractionDigits:2})+'M';
+  if(a >= 1000)    return (v/1000).toLocaleString(locale(),{maximumFractionDigits:1})+'k';
+  return Math.round(v).toLocaleString(locale());
 }
 
 // Feedback visivo al click su un pulsante d'azione: mostra brevemente un testo di
@@ -868,10 +1419,27 @@ function flashBtn(btn, testoOk){
     delete btn.dataset.flashing;
   }, 1100);
 }
-function pct(v){ const s=(v*100).toLocaleString('it-IT',{minimumFractionDigits:1,maximumFractionDigits:1}); return (v>0?"+":"")+s+"%"; }
+function pct(v){ const s=(v*100).toLocaleString(locale(),{minimumFractionDigits:1,maximumFractionDigits:1}); return (v>0?"+":"")+s+"%"; }
 function esc(s){ return String(s==null?'':s).replace(/"/g,'&quot;'); }
 function gClass(g){ return g>0?'g-pos':g<0?'g-neg':'g-zero'; }
-const MESI_ABBR = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+// Mesi abbreviati: li chiedo a Intl invece di scriverli a mano, così seguono la lingua
+// attiva senza una seconda lista da tenere allineata. Iniziale maiuscola per uniformità
+// (l'inglese la mette già, l'italiano no).
+const MESI_CACHE = {};
+function mesiAbbr(){
+  if(MESI_CACHE[LANG]) return MESI_CACHE[LANG];
+  const f = new Intl.DateTimeFormat(locale(), {month:'short'});
+  const arr = [];
+  for(let m=0;m<12;m++){
+    let s = f.format(new Date(2021, m, 1)).replace('.','');
+    s = s.charAt(0).toUpperCase() + s.slice(1);
+    arr.push(s);
+  }
+  return (MESI_CACHE[LANG] = arr);
+}
+// Proxy: il codice esistente continua a scrivere MESI_ABBR[i], ma il valore arriva
+// dalla lingua corrente invece che da una costante fissa.
+const MESI_ABBR = new Proxy({}, { get:(_,p)=> mesiAbbr()[p] });
 // Etichetta di uno snapshot. Gestisce sia le vecchie chiavi mensili "YYYY-MM"
 // sia le nuove giornaliere "YYYY-MM-DD".
 function meseLabel(m){
@@ -913,7 +1481,7 @@ function askText(title, msg, def){
       ${msg?`<p class="msg">${esc(msg)}</p>`:''}
       <input class="modal-input" id="mInput" value="${esc(def||'')}" autocomplete="off">
       <div class="modal-actions">
-        <button class="cancel" id="mCancel">Annulla</button>
+        <button class="cancel" id="mCancel">${T('js.annulla')}</button>
         <button class="ok" id="mOk">OK</button>
       </div>`;
     modalOverlay.classList.add('on');
@@ -933,7 +1501,7 @@ function askConfirm(title, msg, dangerLabel){
       <h3>${esc(title)}</h3>
       ${msg?`<p class="msg">${esc(msg)}</p>`:''}
       <div class="modal-actions">
-        <button class="cancel" id="mCancel">Annulla</button>
+        <button class="cancel" id="mCancel">${T('js.annulla')}</button>
         <button class="danger" id="mOk">${esc(dangerLabel||'Elimina')}</button>
       </div>`;
     modalOverlay.classList.add('on');
@@ -955,7 +1523,7 @@ function askTipo(title){
     modalBox.innerHTML = `
       <h3>${esc(title)}</h3>
       <div class="modal-choices">${choices}</div>
-      <div class="modal-actions"><button class="cancel" id="mCancel">Annulla</button></div>`;
+      <div class="modal-actions"><button class="cancel" id="mCancel">${T('js.annulla')}</button></div>`;
     modalOverlay.classList.add('on');
     modalBox.querySelectorAll('[data-tipo]').forEach(b=>{
       b.onclick = ()=>{ const k=b.dataset.tipo; closeModal(); res(k); };
@@ -1141,7 +1709,7 @@ function prossimoVersamento(pac){
 }
 function fmtData(d){
   if(!d) return '—';
-  return d.toLocaleDateString('it-IT', {day:'2-digit', month:'short', year:'numeric'});
+  return d.toLocaleDateString(locale(), {day:'2-digit', month:'short', year:'numeric'});
 }
 
 // =========================================================
@@ -1149,13 +1717,13 @@ function fmtData(d){
 // =========================================================
 function renderTabs(){
   const tabs = document.getElementById('tabs');
-  let html = `<button class="tab-btn ${activeTab==='riepilogo'?'active':''}" data-tab="riepilogo">Riepilogo</button>`;
+  let html = `<button class="tab-btn ${activeTab==='riepilogo'?'active':''}" data-tab="riepilogo">${T('js.riepilogo')}</button>`;
   state.schede.forEach(s=>{
-    html += `<button class="tab-btn ${activeTab===s.id?'active':''}" data-tab="${s.id}" data-scheda-tab="${s.id}">${esc(s.nome||'Scheda')}</button>`;
+    html += `<button class="tab-btn ${activeTab===s.id?'active':''}" data-tab="${s.id}" data-scheda-tab="${s.id}">${esc(s.nome||T('ui.scheda'))}</button>`;
   });
-  html += `<button class="tab-add" id="addSchedaBtn">+ Scheda</button>`;
-  html += `<button class="tab-btn ${activeTab==='grafici'?'active':''}" data-tab="grafici">Grafici</button>`;
-  html += `<button class="tab-btn ${activeTab==='storico'?'active':''}" data-tab="storico">Storico</button>`;
+  html += `<button class="tab-add" id="addSchedaBtn">${T('js.addScheda')}</button>`;
+  html += `<button class="tab-btn ${activeTab==='grafici'?'active':''}" data-tab="grafici">${T('js.grafici')}</button>`;
+  html += `<button class="tab-btn ${activeTab==='storico'?'active':''}" data-tab="storico">${T('js.storico')}</button>`;
   html += `<button class="tab-btn ${activeTab==='impostazioni'?'active':''}" data-tab="impostazioni">⚙︎</button>`;
   tabs.innerHTML = html;
 
@@ -1282,7 +1850,7 @@ function renderSchedaPanel(scheda){
         <p>${scheda.voci.length} vo${scheda.voci.length===1?'ce':'ci'} · <span class="tipo-badge ${tipoDef(scheda.tipo).badge}">${tipoDef(scheda.tipo).icon} ${esc(tipoDef(scheda.tipo).label)}</span></p>
       </div>
       <div class="head-actions">
-        <button class="add-btn" data-act="addVoce" data-schedaid="${scheda.id}">+ Voce</button>
+        <button class="add-btn" data-act="addVoce" data-schedaid="${scheda.id}">${T('js.addVoce')}</button>
         <button class="icon-btn" data-act="rmScheda" data-schedaid="${scheda.id}">&#128465;</button>
       </div>
     </div>
@@ -1290,7 +1858,7 @@ function renderSchedaPanel(scheda){
   `;
   const list = document.getElementById('vociList-' + scheda.id);
   if(scheda.voci.length === 0){
-    list.innerHTML = '<p class="empty">Nessuna voce. Tocca "+ Voce" per iniziare.</p>';
+    list.innerHTML = `<p class="empty">${T('js.noVoci')}</p>`;
   } else {
     list.innerHTML = scheda.voci.map(v => vociCardHTML(scheda.id, v)).join('');
   }
@@ -1311,7 +1879,7 @@ function renderSchedaPanel(scheda){
     save();
   });
   panel.querySelector('[data-act="rmScheda"]').addEventListener('click', async ()=>{
-    const ok = await askConfirm("Eliminare la scheda?", `"${scheda.nome}" e tutte le sue voci verranno rimosse.`, "Elimina");
+    const ok = await askConfirm(T('m.elimScheda'), T('m.elimSchedaTxt', {n: scheda.nome}), T('m.elimina'));
     if(!ok) return;
     state.schede = state.schede.filter(s=>s.id!==scheda.id);
     if(activeTab === scheda.id) activeTab = 'riepilogo';
@@ -1355,6 +1923,7 @@ function flashField(el){
 // card, così tap e scroll normali restano liberi. WebView-safe (solo pointer events).
 function enableVoceDrag(list, scheda){
   let dragId=null, dragEl=null, pressTimer=null, startY=0, active=false, justDragged=false;
+  let capturedId=null, gripEl=null;
 
   // sopprime il click generato subito dopo un trascinamento
   list.addEventListener('click', (ev)=>{
@@ -1375,6 +1944,14 @@ function enableVoceDrag(list, scheda){
     if(dragEl){ dragEl.classList.remove('dragging'); }
     dragId=null; dragEl=null; active=false;
     document.body.style.userSelect='';
+    // La capture va SEMPRE rilasciata: se resta agganciata, la lista continua a ricevere
+    // gli eventi del puntatore e la maniglia mantiene lo stato :hover/:active anche dopo
+    // il rilascio (sembra "rimasta selezionata"). Su touch impedisce pure lo scroll.
+    if(capturedId != null){
+      try{ list.releasePointerCapture(capturedId); }catch(e){}
+      capturedId = null;
+    }
+    if(gripEl){ gripEl.classList.remove('grabbing'); gripEl.blur && gripEl.blur(); gripEl = null; }
   }
 
   list.addEventListener('pointerdown', (ev)=>{
@@ -1385,15 +1962,19 @@ function enableVoceDrag(list, scheda){
     if(!grip) return;
     const card = grip.closest('.card');
     if(!card) return;
+    // Solo il tasto principale: col destro/medio non si trascina.
+    if(ev.button != null && ev.button !== 0) return;
     ev.preventDefault();
     startY = ev.clientY;
     active = true;
     dragId = card.dataset.id;
     dragEl = card;
+    gripEl = grip;
     card.classList.add('dragging');
+    grip.classList.add('grabbing');
     document.body.style.userSelect='none';
     if(navigator.vibrate) { try{ navigator.vibrate(15); }catch(e){} }
-    try{ list.setPointerCapture(ev.pointerId); }catch(e){}
+    try{ list.setPointerCapture(ev.pointerId); capturedId = ev.pointerId; }catch(e){}
   });
 
   list.addEventListener('pointermove', (ev)=>{
@@ -1452,39 +2033,36 @@ function vociCardHTML(schedaId, v){
   const cardOpen = isOpen('card', v.id, false);
 
   // ---- SUMMARY (sempre visibile) ----
-  const nomeShow = v.nome ? esc(v.nome) : '<span class="noname">Senza nome</span>';
+  const nomeShow = v.nome ? esc(v.nome) : `<span class="noname">${T('js.senzaNome')}</span>`;
   let summaryVals;
   if(cm === 'importo'){
     // Liquidità: solo il saldo (cs-solo lo tiene ancorato a destra, come gli altri tipi)
     summaryVals = `<span class="cs-tot cs-solo">${eur(val.attuale)}</span>`;
-  } else if(!cardOpen){
-    // Card CHIUSA: sullo schermo di un telefono non ci sta tutto. Il nome della voce è
-    // l'informazione che serve per trovarla, quindi gli lascio lo spazio e mostro solo
-    // il guadagno: importi, versato e quote si leggono aprendo la card.
-    summaryVals = `<span class="cs-perc ${gClass(g)} cs-solo">${pct(gp)}</span>`;
   } else {
-    // Card APERTA: qui c'è spazio, mostro anche valore, versato e quote
+    // Stessi dati con la card aperta e con la card chiusa: aprire una voce non deve
+    // cambiarle i numeri sotto gli occhi. Lo spazio lo garantisce il CSS, che tiene il
+    // nome entro metà riga e tronca lui, invece di far uscire le percentuali dal bordo.
     const mostraQ = (cm === 'qp' && v.qty != null && v.qty !== '');
-    const qLbl = v.tipo==='azioni' ? 'az.' : (v.tipo==='crypto' ? 'coin' : 'quote');
+    const qLbl = v.tipo==='azioni' ? T('u.az') : (v.tipo==='crypto' ? T('u.coin') : T('u.quote'));
     const quoteTxt = mostraQ
-      ? ` · ${n(v.qty).toLocaleString('it-IT',{maximumFractionDigits:4})} ${qLbl}`
+      ? ` · ${nfmt(n(v.qty), 4)} ${qLbl}`
       : '';
     summaryVals = `
       <span class="cs-money">
         <span class="cs-tot">${eur(val.attuale)}</span>
-        <span class="cs-carico">vers. ${eur(val.carico)}${quoteTxt}</span>
+        <span class="cs-carico">${T('cs.vers')} ${eur(val.carico)}${quoteTxt}</span>
       </span>
       <span class="cs-perc ${gClass(g)}">${pct(gp)}</span>`;
   }
   // Con la card CHIUSA il nome è solo testo (e tutta la riga apre/chiude).
   // Con la card APERTA diventa un campo: si rinomina lì, senza ripeterlo sotto.
+  // Niente size=: era quello a far dilatare il campo oltre la riga sui nomi lunghi.
   const nomeCell = cardOpen
-    ? `<input class="cs-nome-input" data-f="nome" value="${esc(v.nome)}" placeholder="Nome breve…"
-             size="${Math.max(12, Math.min((v.nome||'').length + 1, 40))}">`
-    : `<span class="cs-nome">${nomeShow}</span>`;
+    ? `<input class="cs-nome-input" data-f="nome" value="${esc(v.nome)}" placeholder="${T('ph.nomeBreve')}">`
+    : `<span class="cs-nome" title="${esc(v.nome||'')}">${nomeShow}</span>`;
   const summary = `
     <div class="card-summary" data-act="toggleCard">
-      <span class="cs-grip" data-act="dragHandle" title="Trascina per riordinare">⋮⋮</span>
+      <span class="cs-grip" data-act="dragHandle" title="${T('grip.title')}">⋮⋮</span>
       <span class="cs-chevron">${cardOpen?'▾':'▸'}</span>
       <span class="cs-badge ${def.badge}">${def.icon}</span>
       ${nomeCell}
@@ -1508,12 +2086,12 @@ function vociCardHTML(schedaId, v){
           </div>
         </div>
       </div>
-      <p class="hint">Il saldo del conto. Usa <b>+</b> per aggiungere un'entrata (es. stipendio) senza riscrivere il totale.</p>`;
+      <p class="hint">${T('js.saldoHint')}</p>`;
   } else if(cm === 'bond'){
     fields = `
       <div class="field-grid">
-        <div class="field span2"><label>Importo investito (€)</label><input data-f="importoBond" type="number" inputmode="decimal" value="${v.importoBond??''}" placeholder="es. 20000"></div>
-        <div class="field span2"><label>Rendimento annuo lordo (%)</label><input data-f="rendimento" type="number" inputmode="decimal" step="any" value="${v.rendimento??''}" placeholder="es. 4"></div>
+        <div class="field span2"><label>${T('js.importoInv')}</label><input data-f="importoBond" type="number" inputmode="decimal" value="${v.importoBond??''}" placeholder="es. 20000"></div>
+        <div class="field span2"><label>${T('js.rendAnnuo')}</label><input data-f="rendimento" type="number" inputmode="decimal" step="any" value="${v.rendimento??''}" placeholder="es. 4"></div>
       </div>
       <p class="hint">${(v.cedola&&v.cedola.on)
         ? 'Con le cedole attive il rendimento è la cedola annua (staccata a parte); il capitale resta pari all\'importo investito.'
@@ -1532,9 +2110,9 @@ function vociCardHTML(schedaId, v){
   if(isPerso){
     persoPanel = `
       <div class="calc-toggle">
-        <button data-calc="qp"      class="${cm==='qp'?'on':''}">Quantità × prezzo</button>
-        <button data-calc="bond"    class="${cm==='bond'?'on':''}">Importo + rendimento</button>
-        <button data-calc="importo" class="${cm==='importo'?'on':''}">Importo diretto</button>
+        <button data-calc="qp"      class="${cm==='qp'?'on':''}">${T('js.modoQp')}</button>
+        <button data-calc="bond"    class="${cm==='bond'?'on':''}">${T('js.modoBond')}</button>
+        <button data-calc="importo" class="${cm==='importo'?'on':''}">${T('js.modoImporto')}</button>
       </div>
       ${cm!=='importo' ? `
       <div class="label-edit">
@@ -1589,7 +2167,7 @@ function vociCardHTML(schedaId, v){
     const cedOn = !!ced.on;
     const cedOpen = isOpen('ced', v.id, false);
     if(!cedOn){
-      cedolaPanel = `<button class="pill-add" data-act="cedToggleOn">+ Cedole</button>`;
+      cedolaPanel = `<button class="pill-add" data-act="cedToggleOn">${T('js.addCedole')}</button>`;
     } else {
       const nCed = cedoleNumero(v);
       const riass = `${CEDOLA_CADENZE[ced.cadenza]?CEDOLA_CADENZE[ced.cadenza].label:''} · ${nCed} incassate · ${eur(cedTot)}`;
@@ -1597,7 +2175,7 @@ function vociCardHTML(schedaId, v){
         <div class="pill-block ${cedOpen?'open':''}">
           <div class="pill-head" data-act="cedToggleOpen">
             <span class="ph-ico">🎟️</span>
-            <span class="ph-txt"><b>Cedole</b><small>${esc(riass)}</small></span>
+            <span class="ph-txt"><b>${T('js.cedole')}</b><small>${esc(riass)}</small></span>
             <span class="ph-chev">${cedOpen?'▾':'▸'}</span>
             <button class="ph-off" data-act="cedToggleOn" title="Disattiva cedole">✕</button>
           </div>
@@ -1632,7 +2210,7 @@ function vociCardHTML(schedaId, v){
       const piuRecenti = i > 0;
       cagrRow = `
         <div class="cagr-row">
-          <label>Rendimento</label>
+          <label>${T('js.rendimento')}</label>
           <button class="anno-nav" data-anno="prev" data-vid="${v.id}" ${piuVecchi?'':'disabled'} title="Anno precedente">‹</button>
           <span class="anno-lbl">${ra.anno}</span>
           <button class="anno-nav" data-anno="next" data-vid="${v.id}" ${piuRecenti?'':'disabled'} title="Anno successivo">›</button>
@@ -1680,16 +2258,16 @@ function pacBodyHTML(v){
 
   const modoToggle = puoQuantita ? `
     <div class="calc-toggle">
-      <button data-pacmodo="importo"  class="${pacModo==='importo'?'on':''}">A importo fisso</button>
-      <button data-pacmodo="quantita" class="${pacModo==='quantita'?'on':''}">A quantità</button>
+      <button data-pacmodo="importo"  class="${pacModo==='importo'?'on':''}">${T('js.aImportoFisso')}</button>
+      <button data-pacmodo="quantita" class="${pacModo==='quantita'?'on':''}">${T('js.aQuantita')}</button>
     </div>` : '';
 
   let campiModo;
   if(pacModo === 'quantita' && puoQuantita){
     campiModo = `
       <div class="field-grid" style="margin-top:.55rem">
-        <div class="field"><label>Titoli / quote per versamento</label><input data-pac="qtyPerVersamento" type="number" inputmode="decimal" step="any" value="${pac.qtyPerVersamento??''}" placeholder="0"></div>
-        <div class="field"><label>Cadenza</label>
+        <div class="field"><label>${T('js.titoliPerVers')}</label><input data-pac="qtyPerVersamento" type="number" inputmode="decimal" step="any" value="${pac.qtyPerVersamento??''}" placeholder="0"></div>
+        <div class="field"><label>${T('js.cadenza')}</label>
           <select class="voce-select" data-pac="cadenza" style="padding:.5rem .6rem">
             ${Object.keys(PAC_CADENZE).map(k=>`<option value="${k}" ${pac.cadenza===k?'selected':''}>${PAC_CADENZE[k].label}</option>`).join('')}
           </select>
@@ -1697,15 +2275,15 @@ function pacBodyHTML(v){
       </div>
       <div class="calc-toggle" style="margin-top:.5rem">
         <button data-pacprezzo="attuale" class="${prezzoPac==='attuale'?'on':''}">Prezzo attuale</button>
-        <button data-pacprezzo="medio"   class="${prezzoPac==='medio'?'on':''}">Prezzo medio</button>
+        <button data-pacprezzo="medio"   class="${prezzoPac==='medio'?'on':''}">${T('js.prezzoMedio')}</button>
       </div>
       ${prezzoPac==='medio' ? `
-      <div class="field" style="margin-top:.5rem"><label>Prezzo medio d'acquisto stimato</label><input data-pac="prezzoMedio" type="number" inputmode="decimal" step="any" value="${pac.prezzoMedio??''}" placeholder="0"></div>` : ''}`;
+      <div class="field" style="margin-top:.5rem"><label>${T('js.prezzoMedioStim')}</label><input data-pac="prezzoMedio" type="number" inputmode="decimal" step="any" value="${pac.prezzoMedio??''}" placeholder="0"></div>` : ''}`;
   } else {
     campiModo = `
       <div class="field-grid" style="margin-top:.55rem">
-        <div class="field"><label>Importo per versamento</label><input data-pac="importo" type="number" inputmode="decimal" value="${pac.importo??''}" placeholder="0"></div>
-        <div class="field"><label>Cadenza</label>
+        <div class="field"><label>${T('js.importoPerVers')}</label><input data-pac="importo" type="number" inputmode="decimal" value="${pac.importo??''}" placeholder="0"></div>
+        <div class="field"><label>${T('js.cadenza')}</label>
           <select class="voce-select" data-pac="cadenza" style="padding:.5rem .6rem">
             ${Object.keys(PAC_CADENZE).map(k=>`<option value="${k}" ${pac.cadenza===k?'selected':''}>${PAC_CADENZE[k].label}</option>`).join('')}
           </select>
@@ -1713,7 +2291,7 @@ function pacBodyHTML(v){
       </div>`;
   }
   const statQta = (pacModo==='quantita' && puoQuantita)
-    ? `<div><span class="pl">Titoli accum.</span><span class="pv">${qtyPrev.toLocaleString('it-IT',{maximumFractionDigits:4})}</span></div>` : '';
+    ? `<div><span class="pl">${T('js.titoliAccum')}</span><span class="pv">${qtyPrev.toLocaleString(locale(),{maximumFractionDigits:4})}</span></div>` : '';
 
   return `
     <div class="pill-body">
@@ -1721,10 +2299,10 @@ function pacBodyHTML(v){
       ${campiModo}
       <div class="field span2" style="margin-top:.55rem"><label>Data di inizio</label><input data-pac="dataInizio" type="date" value="${esc(pac.dataInizio||oggiISO)}"></div>
       <div class="pac-stats">
-        <div><span class="pl">Versamenti</span><span class="pv">${fatti}</span></div>
+        <div><span class="pl">${T('js.versamenti')}</span><span class="pv">${fatti}</span></div>
         ${statQta}
-        <div><span class="pl">Versato prev.</span><span class="pv">${eur(previsto)}</span></div>
-        <div><span class="pl">Prossimo</span><span class="pv">${fmtData(next)}</span></div>
+        <div><span class="pl">${T('js.versatoPrev')}</span><span class="pv">${eur(previsto)}</span></div>
+        <div><span class="pl">${T('js.prossimo')}</span><span class="pv">${fmtData(next)}</span></div>
       </div>
     </div>`;
 }
@@ -1757,7 +2335,7 @@ function cedBodyHTML(v){
       tassoField = `
         <div class="scaglioni-box">
           <div class="scag-title-row" data-act="scagToggle">
-            <span class="le-title">Tasso a scaglioni (step-up)</span>
+            <span class="le-title">${T('js.tassoScaglioni')}</span>
             <span class="ph-chev">▾</span>
           </div>
           ${righe}
@@ -1767,36 +2345,36 @@ function cedBodyHTML(v){
     } else {
       tassoField = `
         <div class="scaglioni-collapsed" data-act="scagToggle">
-          <span>Tasso a scaglioni · <b>attuale ${tassoAttuale}%</b></span>
+          <span>${T('js.tassoScagAttuale', {t: tassoAttuale})}</span>
           <span class="ph-chev">▸</span>
         </div>`;
     }
   } else if(isBond){
     tassoField = `
-      <p class="hint" style="margin-top:.4rem">Usa il rendimento sopra (${n(v.rendimento)}%). <button class="scag-toggle" data-act="tassoScaglioni">il tasso cambia nel tempo?</button></p>`;
+      <p class="hint" style="margin-top:.4rem">Usa il rendimento sopra (${n(v.rendimento)}%). <button class="scag-toggle" data-act="tassoScaglioni">${T('js.tassoCambia')}</button></p>`;
   } else {
     tassoField = `
-      <div class="field span2" style="margin-top:.5rem"><label>Rendimento annuo lordo cedola (%)</label><input data-ced="percentAnnua" type="number" inputmode="decimal" step="any" value="${ced.percentAnnua??''}" placeholder="es. 3"></div>
-      <p class="hint"><button class="scag-toggle" data-act="tassoScaglioni">il tasso cambia nel tempo?</button></p>`;
+      <div class="field span2" style="margin-top:.5rem"><label>${T('js.rendCedola')}</label><input data-ced="percentAnnua" type="number" inputmode="decimal" step="any" value="${ced.percentAnnua??''}" placeholder="es. 3"></div>
+      <p class="hint"><button class="scag-toggle" data-act="tassoScaglioni">${T('js.tassoCambia')}</button></p>`;
   }
 
   return `
     <div class="pill-body">
       ${tassoField}
       <div class="field-grid" style="margin-top:.55rem">
-        <div class="field"><label>Cadenza</label>
+        <div class="field"><label>${T('js.cadenza')}</label>
           <select class="voce-select" data-ced="cadenza" style="padding:.5rem .6rem">
             ${Object.keys(CEDOLA_CADENZE).map(k=>`<option value="${k}" ${ (ced.cadenza||'sem')===k ?'selected':''}>${CEDOLA_CADENZE[k].label}</option>`).join('')}
           </select>
         </div>
-        <div class="field"><label>Data prima cedola</label><input data-ced="dataInizio" type="date" value="${esc(ced.dataInizio||oggiISO)}"></div>
+        <div class="field"><label>${T('js.dataPrimaCed')}</label><input data-ced="dataInizio" type="date" value="${esc(ced.dataInizio||oggiISO)}"></div>
       </div>
       <div class="pac-stats">
-        <div><span class="pl">N. cedole</span><span class="pv">${nCed}</span></div>
-        <div><span class="pl">Riscosso</span><span class="pv">${eur(incassate)}</span></div>
-        <div><span class="pl">Prossima</span><span class="pv">${fmtData(next)}</span></div>
+        <div><span class="pl">${T('js.nCedole')}</span><span class="pv">${nCed}</span></div>
+        <div><span class="pl">${T('js.riscosso')}</span><span class="pv">${eur(incassate)}</span></div>
+        <div><span class="pl">${T('js.prossima')}</span><span class="pv">${fmtData(next)}</span></div>
       </div>
-      <p class="hint">Indica la <b>prima cedola già pagata</b>. Dato informativo: non sommato al patrimonio.</p>
+      <p class="hint">${T('js.cedolaPagataHint')}</p>
     </div>`;
 }
 
@@ -1849,12 +2427,12 @@ function onVoceInput(ev, scheda){
       const next = prossimoVersamento(v.pac);
       const qtyPrev = pacQuantitaPrevista(v.pac);
       const statQta = (v.pac.modo==='quantita')
-        ? `<div><span class="pl">Titoli accum.</span><span class="pv">${qtyPrev.toLocaleString('it-IT',{maximumFractionDigits:4})}</span></div>` : '';
+        ? `<div><span class="pl">${T('js.titoliAccum')}</span><span class="pv">${qtyPrev.toLocaleString(locale(),{maximumFractionDigits:4})}</span></div>` : '';
       stats.innerHTML = `
-        <div><span class="pl">Versamenti</span><span class="pv">${pacVersamentiFatti(v.pac)}</span></div>
+        <div><span class="pl">${T('js.versamenti')}</span><span class="pv">${pacVersamentiFatti(v.pac)}</span></div>
         ${statQta}
-        <div><span class="pl">Versato prev.</span><span class="pv">${eur(pacVersatoPrevisto(v.pac, v))}</span></div>
-        <div><span class="pl">Prossimo</span><span class="pv">${fmtData(next)}</span></div>`;
+        <div><span class="pl">${T('js.versatoPrev')}</span><span class="pv">${eur(pacVersatoPrevisto(v.pac, v))}</span></div>
+        <div><span class="pl">${T('js.prossimo')}</span><span class="pv">${fmtData(next)}</span></div>`;
     }
     return;
   }
@@ -1882,9 +2460,9 @@ function onVoceInput(ev, scheda){
       if(cst){
         const next = prossimaCedola(v);
         cst.innerHTML = `
-          <div><span class="pl">N. cedole</span><span class="pv">${cedoleNumero(v)}</span></div>
-          <div><span class="pl">Riscosso</span><span class="pv">${eur(cedoleIncassate(v))}</span></div>
-          <div><span class="pl">Prossima</span><span class="pv">${fmtData(next)}</span></div>`;
+          <div><span class="pl">${T('js.nCedole')}</span><span class="pv">${cedoleNumero(v)}</span></div>
+          <div><span class="pl">${T('js.riscosso')}</span><span class="pv">${eur(cedoleIncassate(v))}</span></div>
+          <div><span class="pl">${T('js.prossima')}</span><span class="pv">${fmtData(next)}</span></div>`;
       }
     }
     renderRiepilogoTotals();
@@ -1928,17 +2506,19 @@ function updateCardResult(card, v){
   if(res && cm!=='importo') res.innerHTML = `<span>${eur(val.carico)} &rarr; ${eur(val.attuale)}</span><span class="g-eur ${gClass(g)}">${eur(g)} · ${pct(gp)}</span>`;
   // aggiorna i valori nel summary
   const perc = card.querySelector('.cs-perc');
-  if(perc){ perc.className='cs-perc '+gClass(g); perc.textContent = pct(gp); }
+  // .cs-solo va conservato: è lui che ancora a destra il valore unico. Riscrivendo
+  // className secco lo perdevo e il numero saltava a sinistra al primo ricalcolo.
+  if(perc){ perc.className='cs-perc '+gClass(g)+(perc.classList.contains('cs-solo')?' cs-solo':''); perc.textContent = pct(gp); }
   const csTot = card.querySelector('.cs-tot');
   if(csTot) csTot.textContent = eur(val.attuale);
   const csCarico = card.querySelector('.cs-carico');
   if(csCarico){
     let quoteTxt = '';
     if(cm === 'qp' && v.qty != null && v.qty !== ''){
-      const qLbl = v.tipo==='azioni' ? 'az.' : (v.tipo==='crypto' ? 'coin' : 'quote');
-      quoteTxt = ` · ${n(v.qty).toLocaleString('it-IT',{maximumFractionDigits:4})} ${qLbl}`;
+      const qLbl = v.tipo==='azioni' ? T('u.az') : (v.tipo==='crypto' ? T('u.coin') : T('u.quote'));
+      quoteTxt = ` · ${nfmt(n(v.qty), 4)} ${qLbl}`;
     }
-    csCarico.textContent = 'vers. ' + eur(val.carico) + quoteTxt;
+    csCarico.textContent = T('cs.vers') + ' ' + eur(val.carico) + quoteTxt;
   }
   // riga cedole (solo informativa)
   let cedRiga = card.querySelector('.card-cedole');
@@ -2046,9 +2626,9 @@ async function onVoceClick(ev, scheda){
   if(rm){
     // eliminare una voce cancella anche il suo storico nei grafici: chiedo conferma
     const nome = (v.nome||'').trim();
-    const ok = await askConfirm("Eliminare la voce?",
-      nome ? `"${nome}" verrà rimossa dalla scheda.` : "La voce senza nome verrà rimossa.",
-      "Elimina");
+    const ok = await askConfirm(T('m.elimVoce'),
+      nome ? T('m.elimVoceTxt', {n: nome}) : T('m.elimVoceNN'),
+      T('m.elimina'));
     if(!ok) return;
     scheda.voci = scheda.voci.filter(x=>x.id!==v.id);
     save();
@@ -2071,9 +2651,9 @@ async function onVoceClick(ev, scheda){
     // passare a tasso unico cancella gli scaglioni inseriti: avviso solo se ce ne sono
     const n = (v.cedola && v.cedola.scaglioni) ? v.cedola.scaglioni.length : 0;
     if(n > 0){
-      const ok = await askConfirm("Tornare al tasso unico?",
-        `${n === 1 ? 'Lo scaglione inserito verrà rimosso' : `I ${n} scaglioni inseriti verranno rimossi`}.`,
-        "Continua");
+      const ok = await askConfirm(T('m.tassoUnicoT'),
+        n === 1 ? T('m.tassoUnico1') : T('m.tassoUnicoN', {n: n}),
+        T('m.continua'));
       if(!ok) return;
     }
     if(v.cedola) delete v.cedola.scaglioni;
@@ -2135,7 +2715,7 @@ function renderRiepilogoTotals(){
   document.getElementById('riepilogoBody').innerHTML = rows.map(r=>{
     const g = r.attuale - r.carico; const gp = r.carico ? g/r.carico : 0;
     return `<tr><td>${esc(r.nome)}</td><td class="num">${eur(r.carico)}</td><td class="num">${eur(r.attuale)}</td><td class="num ${gClass(g)}">${pct(gp)}</td></tr>`;
-  }).join('') + `<tr class="total"><td>Totale</td><td class="num">${eur(totCarico)}</td><td class="num">${eur(totAttuale)}</td><td class="num ${gClass(invG)}">${pct(invGp)}</td></tr>`;
+  }).join('') + `<tr class="total"><td>${T('js.totale')}</td><td class="num">${eur(totCarico)}</td><td class="num">${eur(totAttuale)}</td><td class="num ${gClass(invG)}">${pct(invGp)}</td></tr>`;
 
   // Patrimonio in euro: SEMPRE completo (tutti i soldi).
   document.getElementById('totAttuale').textContent = eur(totAttuale);
@@ -2184,7 +2764,7 @@ function renderAllocazione(rows, totAttuale){
   ctx.fillText('totale', cx, cy+18);
 
   legend.innerHTML = fette.map((f,i)=>{
-    const p=(f.val/totAttuale*100).toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:1});
+    const p=(f.val/totAttuale*100).toLocaleString(locale(),{minimumFractionDigits:0,maximumFractionDigits:1});
     return `<span class="li"><span class="sw" style="background:${PALETTE[i%PALETTE.length]}"></span>${esc(f.nome)} · ${p}%</span>`;
   }).join('');
 }
@@ -2217,7 +2797,7 @@ function popolaFiltroStorico(){
   const tipiSet = new Set();
   const schede = [];
   state.schede.forEach(s=>{ tipiSet.add(s.tipo); schede.push({id:s.id, nome:s.nome}); });
-  let opt = `<option value="tutto">Tutto il patrimonio</option>`;
+  let opt = `<option value="tutto">${T('js.tuttoPatrim')}</option>`;
   // per categoria
   const tipiOrd = TIPI_ORDER.filter(t=>tipiSet.has(t));
   if(tipiOrd.length){
@@ -2277,7 +2857,7 @@ function renderStorico(){
   const list = document.getElementById('storicoList');
   const sorted = [...state.storico].sort((a,b)=>a.mese.localeCompare(b.mese));
   if(sorted.length === 0){
-    list.innerHTML = '<p class="empty">Ancora nessuna istantanea. Tocca "Salva l\'istantanea di oggi".</p>';
+    list.innerHTML = `<p class="empty">${T('js.noSnap')}</p>`;
     return;
   }
   const righe = sorted.slice().reverse().map(s=>{
@@ -2288,7 +2868,7 @@ function renderStorico(){
     return `<div class="line"><span class="m">${meseLabel(s.mese)}</span><span>${eur(t.valore.attuale)} <span class="${gClass(g)}">(${pct(gp)})</span></span></div>`;
   }).join('');
   const etichetta = storicoFiltro==='tutto' ? '' :
-    `<p class="hint" style="margin-bottom:.5rem">Storico filtrato. Gli snapshot salvati prima di questo aggiornamento potrebbero non avere il dettaglio per categoria/voce e mostrano “—”.</p>`;
+    `<p class="hint" style="margin-bottom:.5rem">${T('js.storicoFiltrato')}</p>`;
   list.innerHTML = etichetta + righe;
 }
 
@@ -2332,7 +2912,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(sb) sb.addEventListener('click', ()=>{
     salvaSnapshot();
     // salvaSnapshot ridisegna la vista: ritrovo il pulsante e do il feedback dopo il render
-    setTimeout(()=> flashBtn(document.getElementById('snapBtn'), '✓ Istantanea salvata'), 0);
+    setTimeout(()=> flashBtn(document.getElementById('snapBtn'), T('js.snapSalvata')), 0);
   });
   // pulsante rapido nell'header: stessa azione, raggiungibile da qualsiasi scheda
   const sq = document.getElementById('snapQuickBtn');
@@ -2359,7 +2939,7 @@ function aggiornaSnapQuick(){
   const ico = el.querySelector('.sq-ico');
   if(!lbl || !ico) return;
   ico.textContent = '📸';           // l'icona resta sempre la macchinetta
-  lbl.textContent = 'Istantanea';   // e l'etichetta non cambia
+  lbl.textContent = T('ui.snap');   // e l'etichetta non cambia
   if(fatta){
     el.classList.add('done');       // la spunta compare accanto (via CSS)
     el.title = "Hai già registrato l'istantanea di oggi. Premendo di nuovo la aggiorni coi valori attuali.";
@@ -2423,7 +3003,7 @@ function renderGrafici(){
     <label class="voce-check-row">
       <input type="checkbox" data-voceid="__totale__" ${selectedVociConfronto.has('__totale__')?'checked':''}>
       <span class="sw" style="background:#c9a227"></span>
-      <span class="nm">Totale patrimonio</span>
+      <span class="nm">${T('js.totPatrim')}</span>
     </label>`;
   const vociChecks = state.schede.map(sc=>{
     const vs = (groups[sc.nome]||[]).filter(v=>v.schedaId===sc.id);
@@ -2438,7 +3018,7 @@ function renderGrafici(){
       <label class="voce-check-row">
         <input type="checkbox" data-voceid="${v.id}" ${selectedVociConfronto.has(v.id)?'checked':''}>
         <span class="sw" style="background:${PALETTE[[...selectedVociConfronto].indexOf(v.id) % PALETTE.length] || '#5a6b82'}"></span>
-        <span class="nm">${esc(v.nome)}${v.haQuote?'':' <small class="noq">(no quote)</small>'}</span>
+        <span class="nm">${esc(v.nome)}${v.haQuote?'':` <small class="noq">${T('js.noQuote')}</small>`}</span>
       </label>`).join('')}`;
   }).join('');
 
@@ -2449,38 +3029,39 @@ function renderGrafici(){
   // riepilogo selezione per l'intestazione del menu a tendina
   const nSel = selEffettivi.length;
   const nomeSel = (id)=>{
-    if(id === '__totale__') return 'Totale patrimonio';
+    if(id === '__totale__') return T('js.totPatrim');
     if(id.startsWith('scheda:')){
       const sc = state.schede.find(s=>s.id === id.slice(7));
-      return sc ? sc.nome : 'scheda';
+      // sc.nome è scritto dall'utente: resta com'è. Tradotto solo il ripiego generico.
+      return sc ? sc.nome : T('ui.scheda').toLowerCase();
     }
     const v = voci.find(x=>x.id===id);
-    return v ? v.nome : '1 voce';
+    return v ? v.nome : T('js.unaVoce');
   };
-  const primoNome = nSel===1 ? nomeSel(selEffettivi[0]) : `somma di ${nSel} selezioni`;
+  const primoNome = nSel===1 ? nomeSel(selEffettivi[0]) : T('js.sommaSel', {n: nSel});
   const selRiassunto = esc(primoNome);
 
   content.innerHTML = `
     ${chartMetric==='annuale' ? '' : `
-    <div class="section-label">Periodo</div>
+    <div class="section-label">${T('js.periodo')}</div>
     <div class="chips">${rangeChips}</div>`}
 
-    <div class="section-label">Cosa mostrare</div>
+    <div class="section-label">${T('js.cosaMostrareLbl')}</div>
     <div class="seg">
-      <button data-metric="valore" class="${chartMetric==='valore'?'on':''}">Valore €</button>
-      <button data-metric="guadagno" class="${chartMetric==='guadagno'?'on':''}">Guadagno %</button>
-      <button data-metric="annuale" class="${chartMetric==='annuale'?'on':''}" ${annualeOk?'':'disabled'} title="${annualeOk?'':'Serve almeno un anno solare concluso nello storico'}">Per anno</button>
-      <button data-metric="quote" class="${chartMetric==='quote'?'on':''}" ${quoteOk?'':'disabled'} title="${quoteOk?'':'Disponibile solo con voci a quote dello stesso tipo'}">Quote</button>
+      <button data-metric="valore" class="${chartMetric==='valore'?'on':''}">${T('js.valoreEur')}</button>
+      <button data-metric="guadagno" class="${chartMetric==='guadagno'?'on':''}">${T('js.guadagnoPct')}</button>
+      <button data-metric="annuale" class="${chartMetric==='annuale'?'on':''}" ${annualeOk?'':'disabled'} title="${annualeOk?'':T('js.tipPerAnno')}">${T('js.perAnnoLbl')}</button>
+      <button data-metric="quote" class="${chartMetric==='quote'?'on':''}" ${quoteOk?'':'disabled'} title="${quoteOk?'':T('js.tipQuoteGraf')}">${T('js.quoteLbl')}</button>
     </div>
 
     <div class="voci-dropdown ${chartVociOpen?'open':''}">
       <button class="voci-dd-head" id="vociDdHead">
-        <span class="vd-lbl">Voci: <b>${selRiassunto}</b></span>
+        <span class="vd-lbl">${T('js.vociLbl')} <b>${selRiassunto}</b></span>
         <span class="vd-chev">${chartVociOpen?'▾':'▸'}</span>
       </button>
       <div class="voci-dd-body" id="confrontoChecks" style="${chartVociOpen?'':'display:none'}">
         ${totaleRow}${vociChecks}
-        <p class="hint" style="margin:.5rem 0 0">Selezionandone più di una vengono <b>sommate</b> in un'unica linea. <b>Quote</b> attivo solo con voci a quote e non col Totale.</p>
+        <p class="hint" style="margin:.5rem 0 0">${T('js.vociHint')}</p>
       </div>
     </div>
 
@@ -2492,13 +3073,13 @@ function renderGrafici(){
     <div class="chart-legend" id="chartLegend"></div>
 
     ${chartMetric==='annuale' ? '' : `
-    <div class="section-label">Tipo di grafico</div>
+    <div class="section-label">${T('js.tipoGraficoLbl')}</div>
     <div class="seg">
-      <button data-type="linea" class="${chartType==='linea'?'on':''}">Linea</button>
-      <button data-type="candela" class="${chartType==='candela'?'on':''}" ${unaSola?'':'disabled'} title="${unaSola?'':'Disponibile con una sola voce selezionata'}">Candela</button>
+      <button data-type="linea" class="${chartType==='linea'?'on':''}">${T('js.lineaLbl')}</button>
+      <button data-type="candela" class="${chartType==='candela'?'on':''}" ${unaSola?'':'disabled'} title="${unaSola?'':T('js.tipCandela')}">${T('js.candelaLbl')}</button>
     </div>`}
 
-    <button class="ghost-btn" id="exportCsvBtn" style="margin-top:.8rem">Esporta storico in Excel</button>
+    <button class="ghost-btn" id="exportCsvBtn" style="margin-top:.8rem">${T('js.exportXlsx')}</button>
   `;
 
   const ddHead = document.getElementById('vociDdHead');
@@ -2636,7 +3217,7 @@ function metricaValore(p){
 // Formatta un valore secondo la metrica (per assi e statistiche).
 function metricaFmt(v){
   if(v==null) return '—';
-  if(chartMetric==='quote') return v.toLocaleString('it-IT',{maximumFractionDigits:4});
+  if(chartMetric==='quote') return v.toLocaleString(locale(),{maximumFractionDigits:4});
   if(chartMetric==='guadagno') return pct(v/100);
   return eur(v);
 }
@@ -2644,15 +3225,15 @@ function metricaFmt(v){
 function asseFmt(v){
   if(v==null) return '—';
   if(chartMetric==='quote'){
-    return Math.abs(v)>=1000 ? (v/1000).toLocaleString('it-IT',{maximumFractionDigits:1})+'k'
-                             : v.toLocaleString('it-IT',{maximumFractionDigits:2});
+    return Math.abs(v)>=1000 ? (v/1000).toLocaleString(locale(),{maximumFractionDigits:1})+'k'
+                             : v.toLocaleString(locale(),{maximumFractionDigits:2});
   }
   if(chartMetric==='guadagno') return pct(v/100);
   // valore in euro: abbrevia con k/M, senza simbolo (l'asse non ne ha bisogno)
   const a=Math.abs(v);
-  if(a>=1000000) return (v/1000000).toLocaleString('it-IT',{maximumFractionDigits:2})+'M';
-  if(a>=1000)    return (v/1000).toLocaleString('it-IT',{maximumFractionDigits:1})+'k';
-  return Math.round(v).toLocaleString('it-IT');
+  if(a>=1000000) return (v/1000000).toLocaleString(locale(),{maximumFractionDigits:2})+'M';
+  if(a>=1000)    return (v/1000).toLocaleString(locale(),{maximumFractionDigits:1})+'k';
+  return Math.round(v).toLocaleString(locale());
 }
 
 // =========================================================
@@ -2665,7 +3246,7 @@ function chartTipHTML(col){
   let righe = '';
   col.voci.forEach(v=>{
     const val = chartMetric==='guadagno' ? pct(v.y/100)
-              : chartMetric==='quote'    ? (v.y||0).toLocaleString('it-IT',{maximumFractionDigits:4})+' q.'
+              : chartMetric==='quote'    ? (v.y||0).toLocaleString(locale(),{maximumFractionDigits:4})+' q.'
               : eur(v.y);
     righe += `<div class="tip-riga">
         ${v.label ? `<span class="tip-sw" style="background:${v.color}"></span>
@@ -2844,7 +3425,7 @@ function combineSeries(series){
 
 function renderStatRow(statRow, pts){
   if(pts.length === 0){
-    statRow.innerHTML = `<div class="stat"><div class="lbl">Dati</div><div class="val">—</div></div>`;
+    statRow.innerHTML = `<div class="stat"><div class="lbl">${T('js.dati')}</div><div class="val">—</div></div>`;
     return;
   }
   const last = pts[pts.length-1];
@@ -2856,7 +3437,7 @@ function renderStatRow(statRow, pts){
   // etichetta e valore principali dipendono dalla metrica
   let mainLbl, mainVal;
   if(chartMetric==='quote'){
-    mainLbl = 'Quote attuali'; mainVal = last.qty==null?'—':last.qty.toLocaleString('it-IT',{maximumFractionDigits:4});
+    mainLbl = 'Quote attuali'; mainVal = last.qty==null?'—':last.qty.toLocaleString(locale(),{maximumFractionDigits:4});
   } else if(chartMetric==='guadagno'){
     mainLbl = 'Guadagno'; mainVal = pct(gp);
   } else {
@@ -2867,7 +3448,7 @@ function renderStatRow(statRow, pts){
   if(prev){
     if(chartMetric==='quote' && last.qty!=null && prev.qty!=null){
       const d = last.qty - prev.qty;
-      varTxt = (d>0?'+':'') + d.toLocaleString('it-IT',{maximumFractionDigits:4});
+      varTxt = (d>0?'+':'') + d.toLocaleString(locale(),{maximumFractionDigits:4});
       varCol = d>0?'var(--green)':d<0?'var(--red)':'var(--muted)';
     } else if(prev.attuale){
       const vm = (last.attuale-prev.attuale)/prev.attuale;
@@ -2876,8 +3457,8 @@ function renderStatRow(statRow, pts){
   }
   statRow.innerHTML = `
     <div class="stat"><div class="lbl">${mainLbl}</div><div class="val">${mainVal}</div></div>
-    <div class="stat"><div class="lbl">Guadagno</div><div class="val" style="color:${gp>0?'var(--green)':gp<0?'var(--red)':'var(--muted)'}">${pct(gp)}</div></div>
-    <div class="stat"><div class="lbl">Vs prima</div><div class="val" style="color:${varCol}">${varTxt}</div></div>
+    <div class="stat"><div class="lbl">${T('js.guadagno')}</div><div class="val" style="color:${gp>0?'var(--green)':gp<0?'var(--red)':'var(--muted)'}">${pct(gp)}</div></div>
+    <div class="stat"><div class="lbl">${T('js.vsPrima')}</div><div class="val" style="color:${varCol}">${varTxt}</div></div>
   `;
 }
 
@@ -2899,7 +3480,7 @@ function drawAxes(ctx, w, h, min, max, fmt){
   let maxLblW = 0;
   for(let i=0;i<=steps;i++){
     const val = min+(i/steps)*(max-min);
-    const label = fmt ? fmt(val) : Math.round(val).toLocaleString('it-IT');
+    const label = fmt ? fmt(val) : Math.round(val).toLocaleString(locale());
     maxLblW = Math.max(maxLblW, ctx.measureText(label).width);
   }
   const padL = Math.max(44, Math.ceil(maxLblW) + 14); // spazio etichetta + margine
@@ -2910,7 +3491,7 @@ function drawAxes(ctx, w, h, min, max, fmt){
     const y = padT+plotH-(i/steps)*plotH;
     ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
     const val = min+(i/steps)*(max-min);
-    const label = fmt ? fmt(val) : Math.round(val).toLocaleString('it-IT');
+    const label = fmt ? fmt(val) : Math.round(val).toLocaleString(locale());
     ctx.fillText(label, padL-8, y+3);
   }
   return { padL, padR, padT, padB, plotW, plotH };
@@ -2970,11 +3551,11 @@ function renderStatRowAnnuale(el, anni){
   const media = vals.reduce((s,v)=>s+v,0)/vals.length;
   const positivi = vals.filter(v=>v>0).length;
   el.innerHTML = `
-    <div class="stat"><label>Anni conclusi</label><span class="v">${anni.length}</span></div>
-    <div class="stat"><label>Media annua</label><span class="v ${gClass(media)}">${pct(media)}</span></div>
-    <div class="stat"><label>Migliore</label><span class="v pos">${migliore.anno}: ${pct(migliore.rend)}</span></div>
-    <div class="stat"><label>Peggiore</label><span class="v ${gClass(peggiore.rend)}">${peggiore.anno}: ${pct(peggiore.rend)}</span></div>
-    <div class="stat"><label>In positivo</label><span class="v">${positivi} su ${anni.length}</span></div>`;
+    <div class="stat"><label>${T('js.anniConclusi')}</label><span class="v">${anni.length}</span></div>
+    <div class="stat"><label>${T('js.mediaAnnua')}</label><span class="v ${gClass(media)}">${pct(media)}</span></div>
+    <div class="stat"><label>${T('js.migliore')}</label><span class="v pos">${migliore.anno}: ${pct(migliore.rend)}</span></div>
+    <div class="stat"><label>${T('js.peggiore')}</label><span class="v ${gClass(peggiore.rend)}">${peggiore.anno}: ${pct(peggiore.rend)}</span></div>
+    <div class="stat"><label>${T('js.inPositivo')}</label><span class="v">${positivi} su ${anni.length}</span></div>`;
 }
 
 function drawLineChart(canvas, series, multi){
@@ -3058,9 +3639,9 @@ function drawCandleChart(canvas, pts){
   const pad=(max-min)*0.15; min-=pad; max+=pad;
   const { padL, padT, plotW, plotH } = drawAxes(ctx, w, h, min, max, (v)=>{
     const a=Math.abs(v);
-    if(a>=1000000) return (v/1000000).toLocaleString('it-IT',{maximumFractionDigits:2})+'M';
-    if(a>=1000)    return (v/1000).toLocaleString('it-IT',{maximumFractionDigits:1})+'k';
-    return Math.round(v).toLocaleString('it-IT');
+    if(a>=1000000) return (v/1000000).toLocaleString(locale(),{maximumFractionDigits:2})+'M';
+    if(a>=1000)    return (v/1000).toLocaleString(locale(),{maximumFractionDigits:1})+'k';
+    return Math.round(v).toLocaleString(locale());
   });
 
   const slot = pts.length===1 ? plotW : plotW/pts.length;
@@ -3479,20 +4060,22 @@ async function exportXlsx(ev){
   const nDate = state.storico.length;
   const nVoci = allVociFlat().length;
   if(nDate === 0){
-    await askConfirm("Nessuna istantanea da esportare",
-      "Non hai ancora salvato nessuna istantanea nello Storico. Salvane almeno una, poi riprova.", "Ho capito");
+    await askConfirm(T('m.noSnapExp'),
+      T('js.noSnapExport'), "Ho capito");
     return;
   }
-  const ok = await askConfirm("Esportare lo storico in Excel?",
-    'Verrà scaricato un file Excel (.xlsx) con ' + nDate + (nDate===1?' istantanea':' istantanee') + ' e ' + nVoci + (nVoci===1?' voce':' voci') + '.',
-    "Esporta");
+  const ok = await askConfirm(T('m.expT'),
+    T('m.expTxt', {
+      d: nDate===1 ? T('m.nSnap1') : T('m.nSnapN', {n: nDate}),
+      v: nVoci===1 ? T('m.nVoce1') : T('m.nVoceN', {n: nVoci})
+    }),
+    T('m.esporta'));
   if(ok){
     try{
       doDownloadXlsx();
-      flashBtn(btn, '\u2713 Excel esportato');
+      flashBtn(btn, T('m.excelOk'));
     }catch(err){
-      await askConfirm("Esportazione non riuscita",
-        "Non è stato possibile creare il file Excel su questo dispositivo.", "Ho capito");
+      await askConfirm(T('m.excelKoT'), T('m.excelKo'), T('m.hoCapito'));
     }
   }
 }
@@ -3506,6 +4089,55 @@ const wizardInner = document.getElementById('wizardInner');
 // Tipi proposti nel wizard (tutti tranne il personalizzato, che si aggiunge da "+ Scheda").
 const WIZARD_TIPI = TIPI_ORDER.filter(k=>k!=='perso');
 
+// Un file scelto a mano può essere qualsiasi cosa: prima di sovrascrivere il portafoglio
+// controllo che sia davvero un backup nostro. Meglio un rifiuto netto che uno stato
+// mezzo importato da cui l'utente non sa più uscire.
+function isBackupValido(o){
+  if(!o || typeof o !== 'object' || Array.isArray(o)) return false;
+  if(!Array.isArray(o.schede)) return false;
+  return o.schede.every(s => s && typeof s === 'object' && typeof s.tipo === 'string' && Array.isArray(s.voci));
+}
+function wireWizardImport(){
+  const btn = wizardInner.querySelector('#wizImportBtn');
+  const inp = wizardInner.querySelector('#wizImportFile');
+  if(!btn || !inp) return;
+  btn.onclick = ()=> inp.click();
+  inp.onchange = ()=>{
+    const f = inp.files && inp.files[0];
+    if(!f) return;
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      let data = null;
+      try{ data = JSON.parse(fr.result); }catch(e){ data = null; }
+      if(!isBackupValido(data)){ wizImportMsg(T('wiz.importErr'), false); inp.value=''; return; }
+      // ricostruisco lo stato passando dal load() normale, così i campi mancanti dei
+      // backup vecchi vengono riempiti con i valori di default invece di restare undefined
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){}
+      state = load();
+      state.setupDone = true;
+      wizImportMsg(T('wiz.importOk', {n: state.schede.length}), true);
+      setTimeout(()=>{
+        closeWizard();
+        activeTab = state.schede.length ? state.schede[0].id : 'riepilogo';
+        persist(); renderAll();
+      }, 700);
+    };
+    fr.onerror = ()=> wizImportMsg(T('wiz.importErr'), false);
+    fr.readAsText(f);
+  };
+}
+function wizImportMsg(txt, ok){
+  let el = wizardInner.querySelector('#wizImportMsg');
+  if(!el){
+    el = document.createElement('p');
+    el.id = 'wizImportMsg';
+    const host = wizardInner.querySelector('.wiz-import');
+    if(host) host.appendChild(el); else return;
+  }
+  el.className = 'wiz-msg ' + (ok ? 'ok' : 'err');
+  el.textContent = txt;
+}
+
 function openWizard(isFirstRun){
   // preseleziona i tipi non ancora presenti (per il primo avvio, i più comuni)
   const presenti = new Set(state.schede.map(s=>s.tipo));
@@ -3517,19 +4149,42 @@ function openWizard(isFirstRun){
   function draw(){
     const bannerEl = document.querySelector('.brand-banner');
     const brand = bannerEl ? `<img class="wizard-banner" src="${bannerEl.src}" alt="WallYeah">` : '';
+    // Lingua e import compaiono solo al primo avvio: dopo, la lingua sta nelle
+    // impostazioni e il backup si importa da lì. Qui servono perché è l'unico momento
+    // in cui l'utente non ha ancora accesso a nessuna delle due.
+    const langBlock = isFirstRun ? `
+      <div class="wiz-lang-row" id="wizLang">
+        ${Object.entries(LANGS).map(([k,v])=>`
+          <button class="wiz-lang ${LANG===k?'on':''}" data-l="${k}" type="button">
+            <span class="wl-flag">${v.flag}</span><span class="wl-lbl">${v.label}</span>
+          </button>`).join('')}
+      </div>` : '';
+    const importBlock = isFirstRun ? `
+      <div class="wiz-import">
+        <div class="wiz-import-head">${esc(T('wiz.importa'))}</div>
+        <button class="ghost-btn" id="wizImportBtn" type="button">${esc(T('wiz.importaBtn'))}</button>
+        <input type="file" id="wizImportFile" accept="application/json,.json" hidden>
+        <p class="wiz-hint" style="margin-top:.5rem">${esc(T('wiz.importaHint'))}</p>
+        <div class="wiz-sep"><span>${esc(T('wiz.oppure'))}</span></div>
+      </div>` : '';
     wizardInner.innerHTML = `
       <div class="wizard-brand">${brand}</div>
-      <h2>${isFirstRun ? 'Benvenuto' : 'Aggiungi schede'}</h2>
-      <p class="lead">${isFirstRun
-        ? 'Scegli quali tipologie di scheda vuoi nel tuo portafoglio. Potrai aggiungerne, rinominarle o eliminarne in qualsiasi momento.'
-        : 'Seleziona le tipologie da aggiungere. Quelle che hai già create restano intatte.'}</p>
+      <h2>${esc(isFirstRun ? T('wiz.benvenuto') : T('wiz.aggiungi'))}</h2>
+      ${langBlock}
+      ${importBlock}
+      <p class="lead">${esc(isFirstRun ? T('wiz.leadFirst') : T('wiz.leadMore'))}</p>
       <div id="wizList"></div>
       <div class="wiz-actions">
-        <button class="snap-btn" id="wizConfirm">${isFirstRun ? 'Crea il portafoglio' : 'Aggiungi le schede selezionate'}</button>
-        ${isFirstRun ? '<button class="ghost-btn" id="wizSkip">Parto da zero, li aggiungo dopo</button>' : '<button class="ghost-btn" id="wizSkip">Annulla</button>'}
+        <button class="snap-btn" id="wizConfirm">${esc(isFirstRun ? T('wiz.crea') : T('wiz.aggiungiSel'))}</button>
+        <button class="ghost-btn" id="wizSkip">${esc(isFirstRun ? T('wiz.skipFirst') : T('wiz.annulla'))}</button>
       </div>
-      <p class="wiz-hint">Ogni tipologia ha campi su misura: azioni ed ETF usano quantità × prezzo, le obbligazioni il corso percentuale, la liquidità un semplice importo.</p>
+      <p class="wiz-hint">${esc(T('wiz.hint'))}</p>
     `;
+    // cambio lingua: ridisegno il wizard nella lingua scelta, senza perdere le selezioni
+    wizardInner.querySelectorAll('.wiz-lang').forEach(b=>{
+      b.onclick = ()=>{ setLang(b.dataset.l); applyI18n(); draw(); };
+    });
+    if(isFirstRun) wireWizardImport();
     const list = wizardInner.querySelector('#wizList');
     list.innerHTML = WIZARD_TIPI.map(k=>{
       const t = TIPI[k];
@@ -3538,7 +4193,7 @@ function openWizard(isFirstRun){
       return `<div class="wiz-row ${on?'on':''}" data-k="${k}" ${already?'style="opacity:.55"':''}>
         <span class="wc">${on?'✓':''}</span>
         <span class="wi">${t.icon}</span>
-        <span class="wtxt"><b>${esc(t.label)}</b><small>${esc(t.desc)}${already?' · già presente':''}</small></span>
+        <span class="wtxt"><b>${esc(t.label)}</b><small>${esc(t.desc)}${already?esc(T('wiz.gia')):''}</small></span>
       </div>`;
     }).join('');
 
@@ -3609,8 +4264,8 @@ function renderReminder(){
     : `Ultimo aggiornamento ${g} giorn${g===1?'o':'i'} fa`;
   b.innerHTML = `
     <span class="rb-ico">🔔</span>
-    <span class="rb-txt"><b>È ora di aggiornare WallYeah.</b><br>${quando}. Rivedi i valori e salva il mese.</span>
-    <button class="rb-go" id="rbGo">Aggiorna</button>
+    <span class="rb-txt"><b>${T('js.oraAggiornare')}</b><br>${quando}. Rivedi i valori e salva il mese.</span>
+    <button class="rb-go" id="rbGo">${T('js.aggiorna')}</button>
     <button class="rb-x" id="rbX" aria-label="Chiudi">✕</button>`;
   b.classList.add('on');
   document.getElementById('rbGo').onclick = ()=>{ reminderChiuso = true; activeTab = 'storico'; renderAll(); };
@@ -3657,7 +4312,7 @@ function wireSettings(){
   const rlist = document.getElementById('reorderList');
   if(rlist){
     if(state.schede.length === 0){
-      rlist.innerHTML = '<p class="hint">Nessuna scheda da riordinare.</p>';
+      rlist.innerHTML = `<p class="hint">${T('js.noSchedeRiord')}</p>`;
     } else {
       rlist.innerHTML = state.schede.map(s=>`
         <div class="reorder-row" data-sid="${s.id}">
@@ -3699,8 +4354,8 @@ function wireSettings(){
     const a = document.createElement('a'); a.href=url; a.download=backupNome();
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    await askConfirm("Condivisione non disponibile",
-      "Il tuo dispositivo non permette di condividere file da qui, così ho scaricato il backup. Puoi caricarlo su Drive manualmente dalla cartella Download.", "Ho capito");
+    await askConfirm(T('m.shareKoT'),
+      T('m.shareKoAlt'), T('m.hoCapito'));
   };
 
   // backup export (download diretto)
@@ -3711,7 +4366,7 @@ function wireSettings(){
     a.href = url; a.download = backupNome();
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    flashBtn(bx, '✓ File scaricato');
+    flashBtn(bx, T('m.fileOk'));
   };
 
   // backup import
@@ -3726,13 +4381,15 @@ function wireSettings(){
       reader.onload = async ()=>{
         let parsed;
         try{ parsed = JSON.parse(reader.result); }
-        catch(e){ await askConfirm("File non valido","Il file selezionato non è un backup WallYe leggibile.","Ho capito"); bf.value=''; return; }
+        catch(e){ await askConfirm(T('m.fileKoT'), T('m.fileKo1'), T('m.hoCapito')); bf.value=''; return; }
         if(!parsed || !Array.isArray(parsed.schede)){
-          await askConfirm("File non valido","Non contiene un portafoglio WallYe.","Ho capito"); bf.value=''; return;
+          await askConfirm(T('m.fileKoT'), T('m.fileKo2'), T('m.hoCapito')); bf.value=''; return;
         }
-        const ok = await askConfirm("Ripristinare il backup?",
-          `Il portafoglio attuale verrà sostituito con quello del file (${parsed.schede.length} sched${parsed.schede.length===1?'a':'e'}). Operazione irreversibile.`,
-          "Ripristina");
+        const ok = await askConfirm(T('m.restoreT'),
+          T('m.restoreTxt', {
+            s: parsed.schede.length===1 ? T('m.nSched1') : T('m.nSchedN', {n: parsed.schede.length})
+          }),
+          T('m.ripristina'));
         bf.value='';
         if(!ok) return;
         state = migrateState(Object.assign(defaultState(), parsed));
@@ -3747,9 +4404,7 @@ function wireSettings(){
 
   const rs = document.getElementById('resetAllBtn');
   if(rs) rs.onclick = async ()=>{
-    const ok = await askConfirm("Azzerare tutto?",
-      "Verranno eliminati definitivamente tutte le schede, le voci e gli snapshot dello storico. Non si può annullare.",
-      "Azzera tutto");
+    const ok = await askConfirm(T('m.resetT'), T('m.resetTxt'), T('set.reset'));
     if(!ok) return;
     state = defaultState();
     persist();
@@ -3775,7 +4430,20 @@ function render(){
   wireSettings();
   if(activeTab === 'grafici') renderGrafici();
 }
-function renderAll(){ renderTabs(); render(); aggiornaSnapQuick(); }
+// Selettore lingua nelle Impostazioni. Cambiare lingua ridisegna tutto: le etichette
+// sono getter, quindi basta un renderAll perché ogni testo si aggiorni da solo.
+function renderSetLang(){
+  const row = document.getElementById('setLangRow');
+  if(!row) return;
+  row.innerHTML = Object.entries(LANGS).map(([k,v])=>`
+    <button class="wiz-lang ${LANG===k?'on':''}" data-l="${k}" type="button">
+      <span class="wl-flag">${v.flag}</span><span class="wl-lbl">${v.label}</span>
+    </button>`).join('');
+  row.querySelectorAll('.wiz-lang').forEach(b=>{
+    b.onclick = ()=>{ if(b.dataset.l===LANG) return; setLang(b.dataset.l); applyI18n(); renderAll(); };
+  });
+}
+function renderAll(){ applyI18n(); renderTabs(); render(); renderSetLang(); aggiornaSnapQuick(); }
 
 // I canvas hanno larghezza fluida ma altezza fissa: allargando la finestra il disegno
 // resterebbe con le proporzioni vecchie (torta ovale, grafici stirati) finché non si
@@ -3822,8 +4490,8 @@ window.addEventListener('appinstalled', ()=>{
 
 async function installaApp(ev){
   if(!promptInstalla){
-    await askConfirm("Installazione non disponibile",
-      "Il browser non propone l'installazione. Su Android usa il menu ⋮ → \"Installa app\"; su iPhone il tasto Condividi → \"Aggiungi a Home\".",
+    await askConfirm(T('m.installKoT'),
+      T('m.installKo'),
       "Ho capito");
     return;
   }
@@ -3838,7 +4506,7 @@ function mostraBarraAggiornamento(){
   bar.id = 'updBar';
   bar.className = 'upd-bar';
   bar.innerHTML = `
-    <span class="upd-txt">È disponibile una versione aggiornata.</span>
+    <span class="upd-txt">${T('js.updateDisp')}</span>
     <button class="upd-btn" id="updNow">Aggiorna</button>
     <button class="upd-x" id="updLater" title="Più tardi">✕</button>`;
   document.body.appendChild(bar);
@@ -3892,17 +4560,15 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
 async function cercaAggiornamenti(ev){
   const btn = ev && ev.currentTarget;
   if(!('serviceWorker' in navigator) || !location.protocol.startsWith('http')){
-    await askConfirm("Aggiornamenti non disponibili",
-      "Stai usando WallYeah come file salvato sul dispositivo: in questo caso non può cercare aggiornamenti da solo. Per riceverli automaticamente, apri la versione web e installala dal browser.",
-      "Ho capito");
+    await askConfirm(T('m.updNoT'),
+      T('m.updNo'), T('m.hoCapito'));
     return;
   }
   if(!navigator.onLine){
-    await askConfirm("Nessuna connessione",
-      "Serve una connessione a internet per controllare se c'è una versione nuova.", "Ho capito");
+    await askConfirm(T('m.noConnT'), T('m.noConn'), T('m.hoCapito'));
     return;
   }
-  if(btn) flashBtn(btn, 'Controllo…');
+  if(btn) flashBtn(btn, T('m.controllo'));
   try{
     const reg = swReg || await navigator.serviceWorker.getRegistration();
     if(!reg) throw new Error('nessuna registrazione');
@@ -3912,12 +4578,10 @@ async function cercaAggiornamenti(ev){
     if(reg.waiting || reg.installing){
       mostraBarraAggiornamento();
     } else {
-      await askConfirm("Sei aggiornato",
-        `Stai usando la versione ${APP_VERSION}, che è l'ultima disponibile.`, "Ho capito");
+      await askConfirm(T('m.aggiornatoT'), T('m.aggiornato', {v: APP_VERSION}), T('m.hoCapito'));
     }
   }catch(err){
-    await askConfirm("Controllo non riuscito",
-      "Non è stato possibile verificare la presenza di aggiornamenti. Riprova più tardi.", "Ho capito");
+    await askConfirm(T('m.checkKoT'), T('m.checkKo'), T('m.hoCapito'));
   }
 }
 
