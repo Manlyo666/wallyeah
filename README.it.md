@@ -64,7 +64,12 @@ I dati vivono nel `localStorage` del browser, sotto la chiave `portafoglio_v4`.
 
 ## Segnalare un problema
 
-Apri una [issue](https://github.com/Manlyo666/wallyeah/issues) raccontando cosa è
+Dall'app: **Impostazioni → Segnala un problema**. Si apre il programma di posta con la
+versione e i dati del dispositivo già compilati. Se la posta non si apre (succede in
+alcuni contenitori WebView per Android), usa *Copia testo e indirizzo* e incolla tutto in
+una mail scritta a mano.
+
+Oppure apri una [issue](https://github.com/Manlyo666/wallyeah/issues) raccontando cosa è
 successo, cosa ti aspettavi, e con che dispositivo e browser. Se puoi, allega un backup
 con dati finti che riproduca il problema — **mai quello vero**, contiene i tuoi importi.
 

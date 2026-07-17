@@ -64,7 +64,12 @@ Data lives in the browser's `localStorage` under the key `portafoglio_v4`.
 
 ## Reporting a problem
 
-Open an [issue](https://github.com/Manlyo666/wallyeah/issues) describing what happened,
+From inside the app: **Settings → Report a problem**. It opens your mail app with the
+version and device details already filled in. If your mail app doesn't open (this happens
+in some Android WebView wrappers), use *Copy text and address* and paste it into a message
+you write yourself.
+
+Or open an [issue](https://github.com/Manlyo666/wallyeah/issues) describing what happened,
 what you expected, and which device and browser you're on. If you can, attach a backup
 with made-up figures that reproduces it — **never your real one**, it holds your actual
 amounts.

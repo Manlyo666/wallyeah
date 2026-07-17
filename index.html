@@ -249,6 +249,16 @@
   .modal-choice .ci{font-size:1.15rem; line-height:1;}
   .modal-choice small{display:block; font-weight:400; color:var(--muted); font-size:.7rem; margin-top:.1rem;}
   .modal-actions{display:flex; gap:.5rem;}
+  /* Tre pulsanti in riga su un telefono si schiacciano e le etichette vanno a capo:
+     qui li impilo, con l'azione principale in alto. */
+  .modal-actions.bug-actions{flex-direction:column-reverse;}
+  .modal-actions.bug-actions button{flex:none; width:100%; margin:0;}
+  .msg.bug-privacy{font-size:.72rem; color:var(--muted); margin-top:-.3rem;}
+  /* Ultima spiaggia: se nemmeno la clipboard funziona, il testo resta selezionabile. */
+  .bug-text{width:100%; min-height:8.5rem; box-sizing:border-box; margin:.2rem 0 .6rem;
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    color:var(--text); font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.7rem;
+    line-height:1.45; padding:.55rem; resize:vertical; -webkit-user-select:text; user-select:text;}
   .modal-actions button{flex:1; border-radius:11px; font-family:inherit; font-weight:600; font-size:.85rem; padding:.65rem; border:1px solid var(--border);}
   .modal-actions .ok{background:var(--gold); color:#1a1404; border-color:var(--gold);}
   .modal-actions .cancel{background:var(--surface-2); color:var(--muted);}
@@ -595,6 +605,11 @@
       <button class="set-btn" id="checkUpdBtn" data-i18n="set.updBtn">Cerca aggiornamenti</button>
     </div>
     <div class="set-card">
+      <h3 data-i18n="set.bug">Segnala un problema</h3>
+      <p data-i18n="set.bugSub">Qualcosa non funziona o manca? Scrivimi: si apre il tuo programma di posta con il messaggio già pronto.</p>
+      <button class="set-btn" id="bugReportBtn" data-i18n="set.bugBtn">Segnala un problema</button>
+    </div>
+    <div class="set-card">
       <h3 data-i18n="set.reset">Azzera tutto</h3>
       <p data-i18n="set.resetSub">Elimina definitivamente ogni scheda, voce e snapshot.</p>
       <button class="set-btn danger" id="resetAllBtn" data-i18n="set.resetBtn">Azzera l'intero portafoglio</button>
@@ -798,6 +813,18 @@ const I18N = {
     "js.candelaLbl":"Candela",
     "js.perAnnoLbl":"Per anno",
     "js.quoteLbl":"Quote",
+    "set.bug":"Segnala un problema",
+    "set.bugSub":"Qualcosa non funziona o manca? Scrivimi: si apre il tuo programma di posta con il messaggio già pronto.",
+    "set.bugBtn":"Segnala un problema",
+    "bug.subject":"WallYeah {v} — segnalazione",
+    "bug.body":"Descrivi qui il problema:\n\n\n\n---\nDettagli tecnici (non cancellarli, aiutano a capire il problema)\n{info}",
+    "bug.titolo":"Segnala un problema",
+    "bug.testo":"Si apre il tuo programma di posta con una mail già pronta per {mail}. Se non succede nulla, usa “Copia” e incolla il testo in una mail scritta a mano.",
+    "bug.apri":"Apri la mail",
+    "bug.copia":"Copia testo e indirizzo",
+    "bug.copiato":"✓ Copiato negli appunti",
+    "bug.copiaKo":"Non riesco a copiare da solo: seleziona il testo qui sotto e copialo a mano.",
+    "bug.noDati":"Nessun dato del tuo portafoglio viene allegato: solo la versione dell’app e il tipo di dispositivo.",
     "m.expT":"Esportare lo storico in Excel?",
     "m.expTxt":"Verrà scaricato un file Excel (.xlsx) con {d} e {v}.",
     "m.nSnap1":"1 istantanea",
@@ -1018,6 +1045,18 @@ const I18N = {
     "js.candelaLbl":"Candle",
     "js.perAnnoLbl":"Per year",
     "js.quoteLbl":"Units",
+    "set.bug":"Report a problem",
+    "set.bugSub":"Something broken or missing? Drop me a line: your mail app opens with the message ready to go.",
+    "set.bugBtn":"Report a problem",
+    "bug.subject":"WallYeah {v} — bug report",
+    "bug.body":"Describe the problem here:\n\n\n\n---\nTechnical details (please keep them, they help me understand the problem)\n{info}",
+    "bug.titolo":"Report a problem",
+    "bug.testo":"Your mail app will open with a message ready for {mail}. If nothing happens, use “Copy” and paste the text into an email you write yourself.",
+    "bug.apri":"Open mail",
+    "bug.copia":"Copy text and address",
+    "bug.copiato":"✓ Copied to clipboard",
+    "bug.copiaKo":"I cannot copy it for you: select the text below and copy it by hand.",
+    "bug.noDati":"None of your portfolio data is attached: only the app version and your device type.",
     "m.expT":"Export history to Excel?",
     "m.expTxt":"An Excel file (.xlsx) will be downloaded with {d} and {v}.",
     "m.nSnap1":"1 snapshot",
@@ -1130,7 +1169,7 @@ const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
 // della cache, così un nuovo numero costringe il browser a riscaricare tutto.
-const APP_VERSION = "1.3.0";
+const APP_VERSION = "1.4.0";
 
 const RANGES = [
   { key:'1m', label:'1 mese', months:1 },
@@ -4408,6 +4447,8 @@ function wireSettings(){
   if(cu) cu.onclick = cercaAggiornamenti;
   const ib = document.getElementById('installBtn');
   if(ib) ib.onclick = installaApp;
+  const bg = document.getElementById('bugReportBtn');
+  if(bg) bg.onclick = segnalaProblema;
   mostraPulsanteInstalla(); // la card appare solo se il browser dice che è installabile
 
   // promemoria
@@ -4553,6 +4594,85 @@ function renderSetLang(){
     b.onclick = ()=>{ if(b.dataset.l===LANG) return; setLang(b.dataset.l); applyI18n(); renderAll(); };
   });
 }
+// =========================================================
+// Segnalazione problemi
+// =========================================================
+// Indirizzo a cui arrivano le segnalazioni.
+const BUG_MAIL = "stocazzo999@tutamail.com";
+
+// Raccoglie il minimo che serve a capire un problema senza toccare i dati personali:
+// versione, lingua, come gira l'app e che browser/dispositivo e'. Nessun valore del
+// portafoglio, nessun nome di voce, nessuno snapshot.
+function infoDiagnostica(){
+  const modo = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches
+    ? 'installata (standalone)'
+    : (location.protocol === 'file:' ? 'file locale' : 'browser');
+  const righe = [
+    'Versione: ' + APP_VERSION,
+    'Lingua: ' + LANG,
+    'Modo: ' + modo,
+    'Schermo: ' + (window.screen ? window.screen.width + 'x' + window.screen.height : '?') +
+      ' @' + (window.devicePixelRatio || 1) + 'x',
+    'Browser: ' + (navigator.userAgent || '?'),
+  ];
+  return righe.join('\n');
+}
+
+function bugMailto(){
+  const subject = T('bug.subject', {v: APP_VERSION});
+  const body = T('bug.body', {info: infoDiagnostica()});
+  return 'mailto:' + BUG_MAIL +
+    '?subject=' + encodeURIComponent(subject) +
+    '&body=' + encodeURIComponent(body);
+}
+
+// Nelle WebView (l'APK generato da AppGeyser/WebIntoApp) i link mailto: spesso non
+// aprono nulla e non lanciano nessun errore: non c'e' modo di accorgersene da qui.
+// Per questo la copia non e' un ripiego nascosto ma un pulsante sempre visibile:
+// se la posta non si apre, l'utente ha comunque testo e indirizzo sottomano.
+function segnalaProblema(){
+  const testoCompleto = T('bug.subject', {v: APP_VERSION}) + '\n' +
+    BUG_MAIL + '\n\n' + T('bug.body', {info: infoDiagnostica()});
+  modalBox.innerHTML = `
+    <h3>${esc(T('bug.titolo'))}</h3>
+    <p class="msg">${esc(T('bug.testo', {mail: BUG_MAIL}))}</p>
+    <p class="msg bug-privacy">${esc(T('bug.noDati'))}</p>
+    <div class="modal-actions bug-actions">
+      <button class="cancel" id="mCancel">${esc(T('js.annulla'))}</button>
+      <button class="ghost-btn" id="bugCopy">${esc(T('bug.copia'))}</button>
+      <button class="snap-btn" id="bugOpen">${esc(T('bug.apri'))}</button>
+    </div>`;
+  modalOverlay.classList.add('on');
+  document.getElementById('mCancel').onclick = closeModal;
+  document.getElementById('bugOpen').onclick = ()=>{
+    // location.href invece di window.open: in WebView open() viene spesso bloccato
+    try{ location.href = bugMailto(); }catch(e){}
+    closeModal();
+  };
+  document.getElementById('bugCopy').onclick = async (ev)=>{
+    const btn = ev.currentTarget;
+    let ok = false;
+    try{
+      // clipboard API: richiede https (o localhost) e il consenso del browser
+      await navigator.clipboard.writeText(testoCompleto);
+      ok = true;
+    }catch(e){ ok = false; }
+    if(ok){ flashBtn(btn, T('bug.copiato')); return; }
+    // Niente clipboard (file://, WebView vecchia, permesso negato): mostro il testo
+    // selezionabile, cosi' resta comunque un modo per portarselo via.
+    modalBox.innerHTML = `
+      <h3>${esc(T('bug.titolo'))}</h3>
+      <p class="msg">${esc(T('bug.copiaKo'))}</p>
+      <textarea class="bug-text" readonly>${esc(testoCompleto)}</textarea>
+      <div class="modal-actions">
+        <button class="cancel" id="mCancel">${esc(T('m.hoCapito'))}</button>
+      </div>`;
+    document.getElementById('mCancel').onclick = closeModal;
+    const ta = modalBox.querySelector('.bug-text');
+    if(ta){ ta.focus(); ta.select(); }
+  };
+}
+
 function renderAll(){ applyI18n(); renderTabs(); render(); renderSetLang(); aggiornaSnapQuick(); }
 
 // I canvas hanno larghezza fluida ma altezza fissa: allargando la finestra il disegno
