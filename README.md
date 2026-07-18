@@ -74,6 +74,12 @@ what you expected, and which device and browser you're on. If you can, attach a 
 with made-up figures that reproduces it — **never your real one**, it holds your actual
 amounts.
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). In the app, the full history is under
+**Settings → What's new in this version**, and a short summary appears automatically
+after each update.
+
 ## License
 
 [MIT](LICENSE) — do what you like with it, no warranty of any kind.

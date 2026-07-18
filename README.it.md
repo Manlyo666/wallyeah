@@ -73,6 +73,12 @@ Oppure apri una [issue](https://github.com/Manlyo666/wallyeah/issues) raccontand
 successo, cosa ti aspettavi, e con che dispositivo e browser. Se puoi, allega un backup
 con dati finti che riproduca il problema — **mai quello vero**, contiene i tuoi importi.
 
+## Novità
+
+Vedi [CHANGELOG.it.md](CHANGELOG.it.md). Nell'app la cronologia completa è in
+**Impostazioni → Novità di questa versione**, e un riepilogo compare da solo dopo ogni
+aggiornamento.
+
 ## Licenza
 
 [MIT](LICENSE) — fanne quello che vuoi, senza garanzie di alcun tipo.
