@@ -2,6 +2,10 @@
 
 Tutte le modifiche rilevanti di WallYeah, dalla più recente.
 
+## 1.0.9 — 2026-07-19
+
+- Corretto un bug su Android per cui toccando un campo (prezzo, ISIN, nome) la tastiera si apriva e si richiudeva subito, rendendo impossibile modificarlo. L'apertura della tastiera non ridisegna più la scheda mentre stai scrivendo.
+
 ## 1.0.8 — 2026-07-19
 
 - Corretto (di nuovo): il “Riscosso” delle cedole ora si aggiorna anche sui dispositivi dove il campo importo non reagiva alla digitazione, non solo riaprendo il pannello.

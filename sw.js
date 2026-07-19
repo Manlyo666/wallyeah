@@ -10,7 +10,7 @@
 // considera tutto nuovo e riscarica invece di riusare i file vecchi.
 // =========================================================
 
-const VERSIONE = '1.0.8';
+const VERSIONE = '1.0.9';
 const CACHE = 'wallyeah-v' + VERSIONE;
 
 // I file che compongono l'app. Non serve elencare altro: WallYeah è autosufficiente

@@ -2,6 +2,10 @@
 
 All notable changes to WallYeah, newest first.
 
+## 1.0.9 — 2026-07-19
+
+- Fixed an Android bug where tapping a field (price, ISIN, name) made the keyboard open and immediately close, making it impossible to edit. Opening the keyboard no longer redraws the card while you're typing.
+
 ## 1.0.8 — 2026-07-19
 
 - Fixed (again): the coupon “Received” figure now updates on devices where the amount field wasn't reacting to typing, not just by reopening the panel.
