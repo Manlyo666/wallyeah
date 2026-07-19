@@ -349,6 +349,14 @@
   .ced-scaduto{display:inline-block; font-size:.58rem; font-weight:700; text-transform:uppercase;
     letter-spacing:.04em; color:var(--red); border:1px solid var(--red); border-radius:5px;
     padding:.05rem .3rem; margin-left:.35rem; vertical-align:middle; opacity:.85;}
+  /* Banner di avviso quando lo storage non conserva i dati: fisso in basso, sopra tutto,
+     con testo leggibile e una X per chiuderlo. Non blocca l'uso dell'app. */
+  .storage-warn{position:fixed; left:0; right:0; bottom:0; z-index:2000;
+    background:#3a1414; border-top:1px solid var(--red); color:#ffd9d9;
+    font-size:.78rem; line-height:1.4; padding:.7rem 2.4rem .7rem .9rem;
+    box-shadow:0 -4px 18px rgba(0,0,0,.4);}
+  .storage-warn .sw-x{position:absolute; top:.5rem; right:.6rem; background:transparent;
+    border:none; color:#ffd9d9; font-size:1rem; cursor:pointer; padding:.2rem .4rem; line-height:1;}
   .pac-stats .pv{display:block; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.9rem; margin-top:.2rem;}
 
   .reminder-banner{display:none;}
@@ -834,6 +842,7 @@ const I18N = {
     "js.candelaLbl":"Candela",
     "js.perAnnoLbl":"Per anno",
     "js.quoteLbl":"Quote",
+    "js.storageKo":"⚠ I dati non vengono salvati su questo dispositivo. Apri l'app da un indirizzo web (http/https) o installala dal browser: aprendo il file .html direttamente, molti telefoni non conservano nulla tra un avvio e l'altro. Fai un backup dalle impostazioni per non perdere i dati.",
     "js.dataScad":"Scadenza (opz.)",
     "js.scadHint":"Se indichi la scadenza, dopo quella data non vengono più conteggiate cedole. Lasciala vuota per un titolo senza scadenza.",
     "js.scaduto":"scaduto",
@@ -1077,6 +1086,7 @@ const I18N = {
     "js.candelaLbl":"Candle",
     "js.perAnnoLbl":"Per year",
     "js.quoteLbl":"Units",
+    "js.storageKo":"⚠ Data is not being saved on this device. Open the app from a web address (http/https) or install it from your browser: when you open the .html file directly, many phones keep nothing between launches. Export a backup from settings so you don't lose your data.",
     "js.dataScad":"Maturity (opt.)",
     "js.scadHint":"If you set a maturity date, no coupons are counted after it. Leave it empty for a security with no maturity.",
     "js.scaduto":"matured",
@@ -1212,7 +1222,7 @@ const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
 // della cache, così un nuovo numero costringe il browser a riscaricare tutto.
-const APP_VERSION = "1.0.7";
+const APP_VERSION = "1.0.8";
 
 // =========================================================
 // CHANGELOG — fonte unica
@@ -1223,6 +1233,13 @@ const APP_VERSION = "1.0.7";
 // La versione piu' recente va in cima. Le voci prima della 1.1 sono ricostruite a
 // posteriori: descrivono le funzioni gia' presenti, non modifiche puntuali.
 const CHANGELOG = [
+  { v:"1.0.8", d:"2026-07-19", it:[
+      "Corretto (di nuovo): il \u201cRiscosso\u201d delle cedole ora si aggiorna anche sui dispositivi dove il campo importo non reagiva alla digitazione, non solo riaprendo il pannello.",
+      "Se l'app non riesce a salvare i dati (succede aprendo il file .html direttamente su alcuni telefoni), ora compare un avviso invece di ripresentare la procedura iniziale a ogni avvio.",
+    ], en:[
+      "Fixed (again): the coupon \u201cReceived\u201d figure now updates on devices where the amount field wasn't reacting to typing, not just by reopening the panel.",
+      "If the app can't save your data (which happens when opening the .html file directly on some phones), a warning now appears instead of showing the setup wizard on every launch.",
+    ]},
   { v:"1.0.7", d:"2026-07-19", it:[
       "Aggiunta la data di scadenza per obbligazioni e titoli di Stato: dopo quella data le cedole non vengono pi\u00f9 conteggiate, e un'etichetta segnala il titolo come scaduto. Il campo \u00e8 facoltativo; lasciandolo vuoto il comportamento resta invariato.",
     ], en:[
@@ -1570,8 +1587,44 @@ function load(){
     return migrateState(Object.assign(defaultState(), parsed));
   }catch(e){ return defaultState(); }
 }
-function persist(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+function persist(){
+  try{
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    storageKo = false;
+  }catch(e){
+    // Il salvataggio e' fallito: memoria piena, o storage non disponibile (succede
+    // aprendo il file da file:// in certi browser, o in navigazione privata). Non resto
+    // in silenzio: alzo un flag che fa comparire un avviso, cosi' l'utente sa che i dati
+    // non vengono conservati invece di ritrovarsi il wizard a ogni riavvio.
+    storageKo = true;
+    mostraAvvisoStorage();
+  }
+}
 function save(){ persist(); renderAll(); }
+
+// Verifica che lo storage non solo accetti la scrittura, ma la CONSERVI: scrive un valore
+// e lo rilegge. Alcuni ambienti (file://, WebView senza storage abilitato, private) fanno
+// finta di scrivere ma non trattengono nulla — ed e' proprio il caso che rimanda al wizard.
+let storageKo = false;
+function storagePersiste(){
+  try{
+    const k = '__wallyeah_test__';
+    localStorage.setItem(k, '1');
+    const ok = localStorage.getItem(k) === '1';
+    localStorage.removeItem(k);
+    return ok;
+  }catch(e){ return false; }
+}
+let avvisoStorageMostrato = false;
+function mostraAvvisoStorage(){
+  if(avvisoStorageMostrato) return;
+  avvisoStorageMostrato = true;
+  const bar = document.createElement('div');
+  bar.className = 'storage-warn';
+  bar.innerHTML = `<span>${esc(T('js.storageKo'))}</span><button class="sw-x" aria-label="ok">✕</button>`;
+  bar.querySelector('.sw-x').onclick = ()=> bar.remove();
+  document.body.appendChild(bar);
+}
 
 let state = load();
 let activeTab = "riepilogo";
@@ -2142,11 +2195,14 @@ function renderSchedaPanel(scheda){
 
   list.addEventListener('input', (ev)=>onVoceInput(ev, scheda));
   list.addEventListener('change', (ev)=>{
-    const p = ev.target.dataset.pac, c = ev.target.dataset.ced;
+    const p = ev.target.dataset.pac, c = ev.target.dataset.ced, f = ev.target.dataset.f;
     // I selettori di data (type=date) su molti browser mobili emettono 'change', non
     // 'input': senza questo, scegliere una scadenza dal calendario non ricalcolava nulla.
-    if(p==='cadenza' || p==='dataInizio' ||
-       c==='cadenza' || c==='dataInizio' || c==='dataFine'){ onVoceInput(ev, scheda); }
+    // Stesso motivo per i campi standard (es. l'importo investito): certi WebView Android
+    // non emettono 'input' affidabilmente sui number field, ma 'change' quando esci dal
+    // campo si'. onVoceInput e' idempotente, quindi un doppio giro (input+change) non fa
+    // danni: ricalcola con lo stesso valore.
+    if(p || (c && c!=='on') || (f && f!=='nome' && f!=='descrizione')){ onVoceInput(ev, scheda); }
   });
   list.addEventListener('click', (ev)=>onVoceClick(ev, scheda));
   // Feedback "registrato": quando esci da un campo compilabile, un breve lampo verde
@@ -4908,6 +4964,12 @@ function popupSeAggiornato(){
   document.getElementById('clOk').onclick = closeModal;
   document.getElementById('clAll').onclick = ()=>{ closeModal(); mostraChangelog(); };
 }
+
+// Storage non persistente: e' la causa del "wizard a ogni avvio". Se rilevo che non
+// conserva i dati, avviso subito — cosi' l'utente capisce perche' e come rimediare
+// (aprire da http/https invece che da file://, o installare la PWA) invece di credere
+// che l'app sia rotta. L'avviso non blocca: l'app resta usabile nella sessione corrente.
+if(!storagePersiste()){ mostraAvvisoStorage(); }
 
 // Primo avvio: se la configurazione non è mai stata fatta, apri il wizard.
 if(!state.setupDone){ openWizard(true); }

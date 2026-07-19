@@ -2,6 +2,11 @@
 
 Tutte le modifiche rilevanti di WallYeah, dalla più recente.
 
+## 1.0.8 — 2026-07-19
+
+- Corretto (di nuovo): il “Riscosso” delle cedole ora si aggiorna anche sui dispositivi dove il campo importo non reagiva alla digitazione, non solo riaprendo il pannello.
+- Se l'app non riesce a salvare i dati (succede aprendo il file .html direttamente su alcuni telefoni), ora compare un avviso invece di ripresentare la procedura iniziale a ogni avvio.
+
 ## 1.0.7 — 2026-07-19
 
 - Aggiunta la data di scadenza per obbligazioni e titoli di Stato: dopo quella data le cedole non vengono più conteggiate, e un'etichetta segnala il titolo come scaduto. Il campo è facoltativo; lasciandolo vuoto il comportamento resta invariato.

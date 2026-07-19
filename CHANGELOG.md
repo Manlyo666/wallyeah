@@ -2,6 +2,11 @@
 
 All notable changes to WallYeah, newest first.
 
+## 1.0.8 — 2026-07-19
+
+- Fixed (again): the coupon “Received” figure now updates on devices where the amount field wasn't reacting to typing, not just by reopening the panel.
+- If the app can't save your data (which happens when opening the .html file directly on some phones), a warning now appears instead of showing the setup wizard on every launch.
+
 ## 1.0.7 — 2026-07-19
 
 - Added a maturity date for bonds and government bonds: after that date coupons are no longer counted, and a label marks the security as matured. The field is optional; leaving it empty keeps the previous behaviour.
