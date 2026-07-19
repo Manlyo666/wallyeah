@@ -2,6 +2,14 @@
 
 Tutte le modifiche rilevanti di WallYeah, dalla più recente.
 
+## 1.0.7 — 2026-07-19
+
+- Aggiunta la data di scadenza per obbligazioni e titoli di Stato: dopo quella data le cedole non vengono più conteggiate, e un'etichetta segnala il titolo come scaduto. Il campo è facoltativo; lasciandolo vuoto il comportamento resta invariato.
+
+## 1.0.6 — 2026-07-19
+
+- Corretto: nei titoli di Stato e nelle obbligazioni, cambiando l'importo investito ora il “Riscosso” delle cedole si aggiorna subito, senza dover chiudere e riaprire il pannello.
+
 ## 1.0.5 — 2026-07-18
 
 - Aggiunta la cronologia delle versioni: la trovi qui, e un riepilogo compare in automatico dopo ogni aggiornamento.

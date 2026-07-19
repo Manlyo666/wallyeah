@@ -2,6 +2,14 @@
 
 All notable changes to WallYeah, newest first.
 
+## 1.0.7 — 2026-07-19
+
+- Added a maturity date for bonds and government bonds: after that date coupons are no longer counted, and a label marks the security as matured. The field is optional; leaving it empty keeps the previous behaviour.
+
+## 1.0.6 — 2026-07-19
+
+- Fixed: for government and corporate bonds, changing the invested amount now updates the coupon “Received” figure immediately, without having to close and reopen the panel.
+
 ## 1.0.5 — 2026-07-18
 
 - Added the version history: you can read it here, and a summary now pops up automatically after each update.

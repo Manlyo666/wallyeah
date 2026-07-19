@@ -345,6 +345,10 @@
   .pac-stats{display:flex; gap:.5rem; margin-top:.65rem;}
   .pac-stats > div{flex:1; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:.5rem .55rem; text-align:center;}
   .pac-stats .pl{display:block; font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+  /* Badge "scaduto" accanto al campo scadenza: rosso smorzato, non allarmante. */
+  .ced-scaduto{display:inline-block; font-size:.58rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.04em; color:var(--red); border:1px solid var(--red); border-radius:5px;
+    padding:.05rem .3rem; margin-left:.35rem; vertical-align:middle; opacity:.85;}
   .pac-stats .pv{display:block; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.9rem; margin-top:.2rem;}
 
   .reminder-banner{display:none;}
@@ -830,6 +834,9 @@ const I18N = {
     "js.candelaLbl":"Candela",
     "js.perAnnoLbl":"Per anno",
     "js.quoteLbl":"Quote",
+    "js.dataScad":"Scadenza (opz.)",
+    "js.scadHint":"Se indichi la scadenza, dopo quella data non vengono più conteggiate cedole. Lasciala vuota per un titolo senza scadenza.",
+    "js.scaduto":"scaduto",
     "set.changelogBtn":"Novità di questa versione",
     "cl.titolo":"Cronologia delle versioni",
     "cl.sub":"Cosa è cambiato in ogni aggiornamento.",
@@ -1070,6 +1077,9 @@ const I18N = {
     "js.candelaLbl":"Candle",
     "js.perAnnoLbl":"Per year",
     "js.quoteLbl":"Units",
+    "js.dataScad":"Maturity (opt.)",
+    "js.scadHint":"If you set a maturity date, no coupons are counted after it. Leave it empty for a security with no maturity.",
+    "js.scaduto":"matured",
     "set.changelogBtn":"What's new in this version",
     "cl.titolo":"Version history",
     "cl.sub":"What changed in each update.",
@@ -1202,7 +1212,7 @@ const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
 // della cache, così un nuovo numero costringe il browser a riscaricare tutto.
-const APP_VERSION = "1.0.5";
+const APP_VERSION = "1.0.7";
 
 // =========================================================
 // CHANGELOG — fonte unica
@@ -1213,6 +1223,16 @@ const APP_VERSION = "1.0.5";
 // La versione piu' recente va in cima. Le voci prima della 1.1 sono ricostruite a
 // posteriori: descrivono le funzioni gia' presenti, non modifiche puntuali.
 const CHANGELOG = [
+  { v:"1.0.7", d:"2026-07-19", it:[
+      "Aggiunta la data di scadenza per obbligazioni e titoli di Stato: dopo quella data le cedole non vengono pi\u00f9 conteggiate, e un'etichetta segnala il titolo come scaduto. Il campo \u00e8 facoltativo; lasciandolo vuoto il comportamento resta invariato.",
+    ], en:[
+      "Added a maturity date for bonds and government bonds: after that date coupons are no longer counted, and a label marks the security as matured. The field is optional; leaving it empty keeps the previous behaviour.",
+    ]},
+  { v:"1.0.6", d:"2026-07-19", it:[
+      "Corretto: nei titoli di Stato e nelle obbligazioni, cambiando l'importo investito ora il \u201cRiscosso\u201d delle cedole si aggiorna subito, senza dover chiudere e riaprire il pannello.",
+    ], en:[
+      "Fixed: for government and corporate bonds, changing the invested amount now updates the coupon \u201cReceived\u201d figure immediately, without having to close and reopen the panel.",
+    ]},
   { v:"1.0.5", d:"2026-07-18", it:[
       "Aggiunta la cronologia delle versioni: la trovi qui, e un riepilogo compare in automatico dopo ogni aggiornamento.",
     ], en:[
@@ -1806,7 +1826,7 @@ function cedoleIncassate(voce){
   if(!c || !c.on || !c.dataInizio) return 0;
   const perAnno = (CEDOLA_CADENZE[c.cadenza] || CEDOLA_CADENZE.sem).perAnno;
   const base = baseCedola(voce);
-  const num = contaRicorrenze(c.dataInizio, c.cadenza, true); // data = prima cedola già incassata
+  const num = contaRicorrenze(c.dataInizio, c.cadenza, true, c.dataFine); // data = prima cedola già incassata
   let tot = 0;
   for(let k=0; k<num; k++){
     tot += base * (tassoCedolaAt(voce, k)/100) / perAnno;
@@ -1816,16 +1836,31 @@ function cedoleIncassate(voce){
 function cedoleNumero(voce){
   const c = voce.cedola;
   if(!c || !c.on || !c.dataInizio) return 0;
-  return contaRicorrenze(c.dataInizio, c.cadenza, true);
+  return contaRicorrenze(c.dataInizio, c.cadenza, true, c.dataFine);
 }
 function prossimaCedola(voce){
   const c = voce.cedola;
   if(!c || !c.on || !c.dataInizio) return null;
   const start = new Date(c.dataInizio + 'T00:00:00');
   if(isNaN(start)) return null;
-  const num = contaRicorrenze(c.dataInizio, c.cadenza, true);
+  const num = contaRicorrenze(c.dataInizio, c.cadenza, true, c.dataFine);
   // la prossima è la ricorrenza numero 'num' (0-based: start è la n.0)
-  return aggiungiPeriodi(start, c.cadenza, num);
+  const prox = aggiungiPeriodi(start, c.cadenza, num);
+  // Se c'e' una scadenza e la prossima cedola cadrebbe dopo, il titolo e' scaduto: non
+  // c'e' nessuna cedola futura da mostrare.
+  if(c.dataFine){
+    const end = new Date(c.dataFine + 'T23:59:59');
+    if(!isNaN(end) && prox > end) return null;
+  }
+  return prox;
+}
+// Un titolo e' scaduto quando la data di scadenza e' passata. Usato per l'etichetta.
+function titoloScaduto(voce){
+  const c = voce.cedola;
+  if(!c || !c.dataFine) return false;
+  const end = new Date(c.dataFine + 'T23:59:59');
+  if(isNaN(end)) return false;
+  return end < new Date();
 }
 
 function schedaTotali(scheda){
@@ -1860,11 +1895,17 @@ function aggiungiPeriodi(base, cadenza, k){
 //   → conta start incluso.
 // firstIsEvent=false: 'start' è l'inizio del piano e il primo evento avviene a fine primo periodo
 //   (es. PAC il cui primo versamento è però il giorno d'inizio → per il PAC usiamo comunque true).
-function contaRicorrenze(dataInizio, cadenza, firstIsEvent){
+function contaRicorrenze(dataInizio, cadenza, firstIsEvent, dataFine){
   if(!dataInizio) return 0;
   const start = new Date(dataInizio + 'T00:00:00');
   if(isNaN(start)) return 0;
-  const now = new Date(); now.setHours(23,59,59,999);
+  let now = new Date(); now.setHours(23,59,59,999);
+  // Se c'e' una scadenza, non conto nulla oltre quella data: un titolo scaduto non paga
+  // altre cedole. Il PAC non passa questo parametro, quindi per lui nulla cambia.
+  if(dataFine){
+    const end = new Date(dataFine + 'T23:59:59');
+    if(!isNaN(end) && end < now) now = end;
+  }
   if(now < start) return 0;
   // conto quanti k>=0 danno start+k*periodo <= now
   let k = 0, guard = 0;
@@ -2100,7 +2141,13 @@ function renderSchedaPanel(scheda){
   });
 
   list.addEventListener('input', (ev)=>onVoceInput(ev, scheda));
-  list.addEventListener('change', (ev)=>{ if(ev.target.dataset.pac==='cadenza' || ev.target.dataset.ced==='cadenza') { onVoceInput(ev, scheda); } });
+  list.addEventListener('change', (ev)=>{
+    const p = ev.target.dataset.pac, c = ev.target.dataset.ced;
+    // I selettori di data (type=date) su molti browser mobili emettono 'change', non
+    // 'input': senza questo, scegliere una scadenza dal calendario non ricalcolava nulla.
+    if(p==='cadenza' || p==='dataInizio' ||
+       c==='cadenza' || c==='dataInizio' || c==='dataFine'){ onVoceInput(ev, scheda); }
+  });
   list.addEventListener('click', (ev)=>onVoceClick(ev, scheda));
   // Feedback "registrato": quando esci da un campo compilabile, un breve lampo verde
   list.addEventListener('focusout', (ev)=>{
@@ -2586,10 +2633,12 @@ function cedBodyHTML(v){
           </select>
         </div>
         <div class="field"><label>${T('js.dataPrimaCed')}</label><input data-ced="dataInizio" type="date" value="${esc(ced.dataInizio||oggiISO)}"></div>
+        <div class="field"><label>${T('js.dataScad')}${titoloScaduto(v)?` <span class="ced-scaduto">${T('js.scaduto')}</span>`:''}</label><input data-ced="dataFine" type="date" value="${esc(ced.dataFine||'')}"></div>
       </div>
+      <p class="hint" style="margin-top:.4rem">${T('js.scadHint')}</p>
       <div class="pac-stats">
-        <div><span class="pl">${T('js.nCedole')}</span><span class="pv">${nCed}</span></div>
-        <div><span class="pl">${T('js.riscosso')}</span><span class="pv">${eur(incassate)}</span></div>
+        <div><span class="pl">${T('js.nCedole')}</span><span class="pv ced-ncedole">${nCed}</span></div>
+        <div><span class="pl">${T('js.riscosso')}</span><span class="pv ced-riscosso">${eur(incassate)}</span></div>
         <div><span class="pl">${T('js.prossima')}</span><span class="pv">${fmtData(next)}</span></div>
       </div>
       <p class="hint">${T('js.cedolaPagataHint')}</p>
@@ -2669,6 +2718,10 @@ function onVoceInput(ev, scheda){
     if(ev.target.type === 'number') v.cedola[cf] = ev.target.value === '' ? null : parseFloat(ev.target.value);
     else v.cedola[cf] = ev.target.value;
     if(cf === 'cadenza'){ save(); return; } // ridisegna per aggiornare le stat cedola
+    // La scadenza cambia anche il badge "scaduto" accanto al campo: ridisegno la card
+    // cosi' l'etichetta compare/sparisce subito. E' un'azione occasionale, non un input
+    // continuo, quindi il ridisegno completo non da' fastidio.
+    if(cf === 'dataFine'){ save(); return; }
     persist();
     updateCardResult(card, v);
     // aggiorno le stat cedola SOLO nel blocco toccato
@@ -2747,6 +2800,13 @@ function updateCardResult(card, v){
     if(!cedRiga && body){ cedRiga = document.createElement('div'); cedRiga.className='card-cedole'; body.appendChild(cedRiga); }
     if(cedRiga) cedRiga.innerHTML = `cedole incassate (informative): <b>${eur(ced)}</b>`;
   } else if(cedRiga){ cedRiga.remove(); }
+  // Pannello cedole espanso: se e' aperto, il "Riscosso" dipende dall'importo investito
+  // (per i bond la base cedola e' importoBond), quindi va ricalcolato mentre digiti.
+  // Senza questo si aggiornava solo chiudendo e riaprendo il pannello.
+  const cedRis = card.querySelector('.ced-riscosso');
+  if(cedRis) cedRis.textContent = eur(ced);
+  const cedN = card.querySelector('.ced-ncedole');
+  if(cedN) cedN.textContent = cedoleNumero(v);
   // Il rendimento per anno solare dipende solo dallo storico registrato, non dai valori
   // che stai digitando: non c'è nulla da aggiornare qui (si ricalcola al prossimo render).
 }
