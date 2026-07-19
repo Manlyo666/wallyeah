@@ -2,6 +2,15 @@
 
 All notable changes to WallYeah, newest first.
 
+## 1.0.11 — 2026-07-19
+
+- Dates (start, first coupon, maturity) can now be typed by hand as dd/mm/yyyy, as well as picked from the calendar with the dedicated button. Much faster for far-off dates like bond maturities.
+
+## 1.0.10 — 2026-07-19
+
+- Open entry is easier to read: one line for paid → current, the line below (green/red) for the gain in euro and percent, and the selected year's return at the bottom.
+- Closed entry is more compact: amounts above 10,000 are shortened (e.g. “12.5k”) and fund/ETF units use the “Q” tag.
+
 ## 1.0.9 — 2026-07-19
 
 - Fixed an Android bug where tapping a field (price, ISIN, name) made the keyboard open and immediately close, making it impossible to edit. Opening the keyboard no longer redraws the card while you're typing.

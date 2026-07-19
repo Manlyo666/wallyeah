@@ -124,11 +124,29 @@
   .field label{font-size:.66rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
   .field input{background:var(--surface-2); border:1px solid var(--border); border-radius:9px; color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:.9rem; padding:.5rem .6rem; width:100%; min-width:0;}
   .field input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  /* Campo data digitabile: casella di testo gg/mm/aaaa + pulsante calendario a destra.
+     Il date-picker nativo e' nascosto ma resta nel DOM per essere aperto dal pulsante. */
+  .date-field{position:relative; display:flex; align-items:stretch; gap:.35rem;}
+  .date-field .date-text{flex:1 1 auto; min-width:0;}
+  .date-field .date-native{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;
+    left:0; bottom:0; padding:0; margin:0; border:0;}
+  .date-field .date-cal{flex:0 0 auto; width:2.4rem; background:var(--surface-2);
+    border:1px solid var(--border); border-radius:9px; cursor:pointer; font-size:1rem;
+    line-height:1; padding:0; color:var(--text); -webkit-tap-highlight-color:transparent;}
+  .date-field .date-cal:active{background:var(--surface);}
   .check-row{display:flex; align-items:center; gap:.4rem; margin-top:.55rem; font-size:.74rem; color:var(--muted);}
   .check-row input{width:15px; height:15px;}
 
-  .card-result{display:flex; justify-content:space-between; margin-top:.75rem; padding-top:.7rem; border-top:1px dashed var(--border); font-size:.85rem;}
-  .card-result .g-eur{font-family:'Space Grotesk',sans-serif; font-weight:600;}
+  .card-result{display:flex; flex-direction:column; gap:.3rem; margin-top:.75rem; padding-top:.7rem; border-top:1px dashed var(--border); font-size:.85rem;}
+  .card-result .cr-line{display:flex; align-items:baseline; gap:.5rem;}
+  /* Riga 1 — versato → attuale. L'attuale e' il dato che conta: un filo piu' marcato. */
+  .card-result .cr-vals .cr-carico{color:var(--muted);}
+  .card-result .cr-vals .cr-arrow{color:var(--muted); flex:0 0 auto;}
+  .card-result .cr-vals .cr-attuale{font-family:'Space Grotesk',sans-serif; font-weight:600; color:var(--text);}
+  /* Riga 2 — guadagno in euro e in percentuale, nel colore del segno (verde/rosso). */
+  .card-result .cr-gain{font-family:'Space Grotesk',sans-serif; font-weight:600; gap:.6rem;}
+  .card-result .cr-gain.pos{color:var(--green);} .card-result .cr-gain.neg{color:var(--red);} .card-result .cr-gain.zero{color:var(--muted);}
+  .card-result .cr-gain .cr-gpct{opacity:.85;}
 
   .cagr-row{display:flex; align-items:center; gap:.5rem; margin-top:.5rem; font-size:.78rem;}
   .cagr-row label{color:var(--muted); flex:0 0 auto;}
@@ -699,7 +717,7 @@ function locale(){ return LANGS[LANG].locale; }
 
 const I18N = {
   it: {
-    'u.az':'az.', 'u.coin':'coin', 'u.quote':'quote',
+    'u.az':'az', 'u.coin':'coin', 'u.quote':'Q',
     'cs.noname':'Senza nome',
     'ph.nomeBreve':'Nome breve…',
     'grip.title':'Trascina per riordinare',
@@ -946,7 +964,7 @@ const I18N = {
     "set.verPrefix":"Stai usando la versione",
   },
   en: {
-    'u.az':'sh.', 'u.coin':'coin', 'u.quote':'units',
+    'u.az':'sh', 'u.coin':'coin', 'u.quote':'Q',
     'cs.noname':'Unnamed',
     'ph.nomeBreve':'Short name…',
     'grip.title':'Drag to reorder',
@@ -1222,7 +1240,7 @@ const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
 // della cache, così un nuovo numero costringe il browser a riscaricare tutto.
-const APP_VERSION = "1.0.9";
+const APP_VERSION = "1.0.11";
 
 // =========================================================
 // CHANGELOG — fonte unica
@@ -1233,6 +1251,18 @@ const APP_VERSION = "1.0.9";
 // La versione piu' recente va in cima. Le voci prima della 1.1 sono ricostruite a
 // posteriori: descrivono le funzioni gia' presenti, non modifiche puntuali.
 const CHANGELOG = [
+  { v:"1.0.11", d:"2026-07-19", it:[
+      "Le date (inizio, prima cedola, scadenza) ora si possono digitare a mano nel formato gg/mm/aaaa, oltre che sceglierle dal calendario con l'apposito pulsante. Molto pi\u00f9 rapido per le scadenze lontane, come quelle dei BTP.",
+    ], en:[
+      "Dates (start, first coupon, maturity) can now be typed by hand as dd/mm/yyyy, as well as picked from the calendar with the dedicated button. Much faster for far-off dates like bond maturities.",
+    ]},
+  { v:"1.0.10", d:"2026-07-19", it:[
+      "Voce aperta pi\u00f9 leggibile: su una riga versato \u2192 attuale, sulla riga sotto (in verde/rosso) il guadagno in euro e in percentuale, e in fondo il rendimento dell'anno selezionato.",
+      "Voce chiusa pi\u00f9 compatta: gli importi oltre 10.000 si accorciano (es. \u201c12,5k\u201d) e le quote dei fondi/ETF usano la sigla \u201cQ\u201d.",
+    ], en:[
+      "Open entry is easier to read: one line for paid \u2192 current, the line below (green/red) for the gain in euro and percent, and the selected year's return at the bottom.",
+      "Closed entry is more compact: amounts above 10,000 are shortened (e.g. \u201c12.5k\u201d) and fund/ETF units use the \u201cQ\u201d tag.",
+    ]},
   { v:"1.0.9", d:"2026-07-19", it:[
       "Corretto un bug su Android per cui toccando un campo (prezzo, ISIN, nome) la tastiera si apriva e si richiudeva subito, rendendo impossibile modificarlo. L'apertura della tastiera non ridisegna pi\u00f9 la scheda mentre stai scrivendo.",
     ], en:[
@@ -1687,30 +1717,37 @@ function flashBtn(btn, testoOk){
     delete btn.dataset.flashing;
   }, 1100);
 }
-// Importo per le card chiuse. Abbrevia SOLO quando l'abbreviazione fa guadagnare
-// davvero spazio: sotto i 100.000 una cifra come "2.556,80" e' gia' corta e leggibile,
-// mentre "2,6k" nasconderebbe 56 euro per risparmiare tre caratteri. Sopra quella
-// soglia le cifre iniziano a rubare spazio al nome, e li' k/M/B ripagano.
-// 2556,8 → "€ 2.557"  ·  128000 → "€ 128k"  ·  4,2 mln → "€ 4,2M"
+// Importo per le card CHIUSE, dove lo spazio e' poco. Sopra 10.000 abbrevio con k/M/B
+// tenendo UN decimale, cosi' non perdo l'ordine di grandezza: 12.500 → "12,5k",
+// 128.000 → "128k", 4,2 mln → "4,2M". Sotto i 10.000 la cifra piena e' gia' corta.
+// 8.500 → "€ 8.500"  ·  12.500 → "€ 12,5k"  ·  999.999 → "€ 1M"
 function eurC(v){
-  // Sotto i 100k la cifra piena si legge bene e non ruba spazio al nome: niente suffisso,
-  // e nessun decimale (i centesimi sono i due caratteri meno utili della riga).
   const a = Math.abs(v);
-  if(a < 1e5) return "€ " + nfmt(Math.round(v), 0);
-  // Sopra, scelgo la scala partendo dalla piu' piccola e salgo finche' il numero da
-  // mostrare, UNA VOLTA ARROTONDATO, sta sotto 1000. Il controllo va fatto sul valore
-  // arrotondato e non su quello grezzo: 999.999 ai k darebbe "1000k" invece di "1M",
-  // e lo stesso vale a ogni gradino sopra ("1000M" invece di "1B").
-  const scale = [[1e3,'k',0], [1e6,'M',2], [1e9,'B',2]];
+  // Sotto i 10k niente suffisso: la cifra intera si legge bene. Niente centesimi.
+  if(a < 1e4) return "€ " + nfmt(Math.round(v), 0);
+  // Sopra, scelgo la scala dal basso e salgo finche' il numero mostrato (gia' arrotondato)
+  // sta sotto 1000: cosi' 999.999 diventa "1M" e non "1000k", e vale a ogni gradino.
+  // 1 decimale per i k (12,5k), 2 per M e B (1,25M) dove i decimali contano di piu'.
+  const scale = [[1e3,'k',1], [1e6,'M',2], [1e9,'B',2]];
   for(const [div, suf, dec] of scale){
-    const x = Number((v/div).toFixed(dec));
-    if(Math.abs(x) < 1000) return "€ " + nfmt(x, dec) + suf;
+    let x = Number((v/div).toFixed(dec));
+    // se il decimale e' .0 lo tolgo: "128k" e' meglio di "128,0k"
+    const decEff = Number.isInteger(x) ? 0 : dec;
+    if(Math.abs(x) < 1000) return "€ " + nfmt(x, decEff) + suf;
   }
-  // Oltre i mille miliardi: resto in B invece di cadere nella cifra piena, che qui
-  // sarebbe lunghissima e proprio quello che stiamo cercando di evitare.
   return "€ " + nfmt(Number((v/1e9).toFixed(2)), 2) + "B";
 }
 function pct(v){ const s=(v*100).toLocaleString(locale(),{minimumFractionDigits:1,maximumFractionDigits:1}); return (v>0?"+":"")+s+"%"; }
+// Quantita' compatta per la card chiusa: gli interi restano interi (320), le frazioni
+// (crypto) mostrano pochi decimali significativi invece di riempirsi di zeri o cifre
+// lunghissime. 320 → "320"  ·  0,5123 → "0,51"  ·  0,00042 → "0,0004"
+function qtyC(q){
+  if(Number.isInteger(q)) return nfmt(q, 0);
+  const a = Math.abs(q);
+  // per numeri molto piccoli tengo piu' decimali, per i piu' grandi ne bastano due
+  const dec = a >= 1 ? 2 : (a >= 0.01 ? 3 : 4);
+  return nfmt(q, dec);
+}
 function esc(s){ return String(s==null?'':s).replace(/"/g,'&quot;'); }
 function gClass(g){ return g>0?'g-pos':g<0?'g-neg':'g-zero'; }
 // Mesi abbreviati: li chiedo a Intl invece di scriverli a mano, così seguono la lingua
@@ -2024,6 +2061,51 @@ function fmtData(d){
   return d.toLocaleDateString(locale(), {day:'2-digit', month:'short', year:'numeric'});
 }
 
+// ---- Campo data digitabile (gg/mm/aaaa) + calendario nativo -------------------------
+// I dati restano salvati in ISO (YYYY-MM-DD): non tocco il formato di archiviazione, cosi'
+// i backup e i calcoli cedole continuano a funzionare. Cambio solo come l'utente scrive e
+// legge la data. Motivo: per una scadenza BTP a 10+ anni il calendario nativo e' un incubo
+// (dodici "avanti" per ogni semestre), mentre "31/12/2035" si digita in un secondo.
+
+// ISO (2035-12-31) -> visibile (31/12/2035). Vuoto o non valido -> stringa vuota.
+function isoToVista(iso){
+  if(!iso) return '';
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if(!m) return '';
+  return `${m[3]}/${m[2]}/${m[1]}`;
+}
+// Visibile (31/12/2035, ma tollera 31-12-2035, 31.12.2035, anno a 2 cifre) -> ISO.
+// Ritorna null se non e' una data valida davvero (giorno/mese fuori range, 31/02, ecc.).
+function vistaToIso(txt){
+  if(!txt) return null;
+  const m = /^\s*(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\s*$/.exec(txt);
+  if(!m) return null;
+  let [_, g, mm, aa] = m;
+  g = +g; mm = +mm; aa = +aa;
+  if(aa < 100) aa += 2000;                     // "35" -> 2035
+  if(mm < 1 || mm > 12 || g < 1 || g > 31) return null;
+  const d = new Date(aa, mm-1, g);
+  // ricontrollo: se il giorno "trabocca" (es. 31/02) Date lo sposta al mese dopo,
+  // quindi verifico che i componenti siano rimasti quelli inseriti
+  if(d.getFullYear()!==aa || d.getMonth()!==mm-1 || d.getDate()!==g) return null;
+  const p = n => String(n).padStart(2,'0');
+  return `${aa}-${p(mm)}-${p(g)}`;
+}
+// Genera un campo data: casella di testo gg/mm/aaaa + pulsantino calendario. `dataAttr`
+// e' l'attributo che identifica il campo (es. "data-ced=\"dataFine\""); il valore ISO
+// viaggia su quello, cosi' gli handler esistenti continuano a leggerlo come prima.
+function campoDataHTML(dataAttrName, dataAttrVal, isoValue, placeholder){
+  const vista = isoToVista(isoValue);
+  const ph = placeholder || 'gg/mm/aaaa';
+  return `<div class="date-field">
+    <input class="date-text" type="text" inputmode="numeric" autocomplete="off"
+           ${dataAttrName}="${dataAttrVal}" data-iso="${esc(isoValue||'')}"
+           value="${esc(vista)}" placeholder="${ph}" maxlength="10">
+    <input class="date-native" type="date" value="${esc(isoValue||'')}" tabindex="-1" aria-hidden="true">
+    <button type="button" class="date-cal" aria-label="calendario">📅</button>
+  </div>`;
+}
+
 // =========================================================
 // TABS
 // =========================================================
@@ -2201,13 +2283,14 @@ function renderSchedaPanel(scheda){
   list.addEventListener('input', (ev)=>onVoceInput(ev, scheda));
   list.addEventListener('change', (ev)=>{
     const p = ev.target.dataset.pac, c = ev.target.dataset.ced, f = ev.target.dataset.f;
-    // I selettori di data (type=date) su molti browser mobili emettono 'change', non
-    // 'input': senza questo, scegliere una scadenza dal calendario non ricalcolava nulla.
-    // Stesso motivo per i campi standard (es. l'importo investito): certi WebView Android
-    // non emettono 'input' affidabilmente sui number field, ma 'change' quando esci dal
-    // campo si'. onVoceInput e' idempotente, quindi un doppio giro (input+change) non fa
-    // danni: ricalcola con lo stesso valore.
-    if(p || (c && c!=='on') || (f && f!=='nome' && f!=='descrizione')){ onVoceInput(ev, scheda); }
+    const isDate = ev.target.classList && (ev.target.classList.contains('date-text') || ev.target.classList.contains('date-native'));
+    // I selettori di data su molti browser mobili emettono 'change', non 'input': senza
+    // questo, scegliere una scadenza dal calendario non ricalcolava nulla. Stesso motivo
+    // per i campi standard (es. l'importo investito): certi WebView Android non emettono
+    // 'input' affidabilmente sui number field, ma 'change' quando esci dal campo si'.
+    // Per i campi data, il 'change' (uscita dal campo) fa scattare il ridisegno completo,
+    // che aggiorna il badge "scaduto" — cosa che durante la digitazione avevo rimandato.
+    if(isDate || p || (c && c!=='on') || (f && f!=='nome' && f!=='descrizione')){ onVoceInput(ev, scheda); }
   });
   list.addEventListener('click', (ev)=>onVoceClick(ev, scheda));
   // Feedback "registrato": quando esci da un campo compilabile, un breve lampo verde
@@ -2371,7 +2454,7 @@ function vociCardHTML(schedaId, v){
     const mostraQ = (cm === 'qp' && v.qty != null && v.qty !== '');
     const qLbl = v.tipo==='azioni' ? T('u.az') : (v.tipo==='crypto' ? T('u.coin') : T('u.quote'));
     const quoteTxt = mostraQ
-      ? ` · ${nfmt(n(v.qty), 4)} ${qLbl}`
+      ? ` · ${qtyC(n(v.qty))} ${qLbl}`
       : '';
     summaryVals = `
       <span class="cs-money">
@@ -2518,8 +2601,8 @@ function vociCardHTML(schedaId, v){
 
   const resultRow = cm==='importo' ? '' : `
     <div class="card-result">
-      <span>${eur(val.carico)} &rarr; ${eur(val.attuale)}</span>
-      <span class="g-eur ${gClass(g)}">${eur(g)} · ${pct(gp)}</span>
+      <div class="cr-line cr-vals"><span class="cr-carico">${eur(val.carico)}</span><span class="cr-arrow">&rarr;</span><span class="cr-attuale">${eur(val.attuale)}</span></div>
+      <div class="cr-line cr-gain ${gClass(g)}"><span class="cr-geur">${eur(g)}</span><span class="cr-gpct">${pct(gp)}</span></div>
     </div>`;
 
   // Rendimento per anno solare, dallo storico registrato. Con le frecce si scorrono
@@ -2623,7 +2706,7 @@ function pacBodyHTML(v){
     <div class="pill-body">
       ${modoToggle}
       ${campiModo}
-      <div class="field span2" style="margin-top:.55rem"><label>Data di inizio</label><input data-pac="dataInizio" type="date" value="${esc(pac.dataInizio||oggiISO)}"></div>
+      <div class="field span2" style="margin-top:.55rem"><label>Data di inizio</label>${campoDataHTML('data-pac','dataInizio', pac.dataInizio||oggiISO)}</div>
       <div class="pac-stats">
         <div><span class="pl">${T('js.versamenti')}</span><span class="pv">${fatti}</span></div>
         ${statQta}
@@ -2693,8 +2776,8 @@ function cedBodyHTML(v){
             ${Object.keys(CEDOLA_CADENZE).map(k=>`<option value="${k}" ${ (ced.cadenza||'sem')===k ?'selected':''}>${CEDOLA_CADENZE[k].label}</option>`).join('')}
           </select>
         </div>
-        <div class="field"><label>${T('js.dataPrimaCed')}</label><input data-ced="dataInizio" type="date" value="${esc(ced.dataInizio||oggiISO)}"></div>
-        <div class="field"><label>${T('js.dataScad')}${titoloScaduto(v)?` <span class="ced-scaduto">${T('js.scaduto')}</span>`:''}</label><input data-ced="dataFine" type="date" value="${esc(ced.dataFine||'')}"></div>
+        <div class="field"><label>${T('js.dataPrimaCed')}</label>${campoDataHTML('data-ced','dataInizio', ced.dataInizio||oggiISO)}</div>
+        <div class="field"><label>${T('js.dataScad')}${titoloScaduto(v)?` <span class="ced-scaduto">${T('js.scaduto')}</span>`:''}</label>${campoDataHTML('data-ced','dataFine', ced.dataFine||'')}</div>
       </div>
       <p class="hint" style="margin-top:.4rem">${T('js.scadHint')}</p>
       <div class="pac-stats">
@@ -2706,11 +2789,90 @@ function cedBodyHTML(v){
     </div>`;
 }
 
+// Ricalcola le tre statistiche del pannello cedole (n. cedole, riscosso, prossima) senza
+// ridisegnare la card. `host` puo' essere il blocco .pill-body toccato oppure l'intera
+// card: cerco il .pac-stats delle cedole in ogni caso.
+function aggiornaStatCedola(host, v){
+  if(!host) return;
+  // fra i .pac-stats (ce n'e' anche uno per il PAC) prendo quello del pannello cedole:
+  // e' dentro un .pill-body che contiene un campo data-ced. Se non lo distinguo, aggiorno
+  // tutti i .pac-stats che hanno una .ced-riscosso (marcatore esclusivo delle cedole).
+  const target = host.querySelector('.ced-riscosso');
+  const cst = target ? target.closest('.pac-stats') : null;
+  if(!cst) return;
+  const next = prossimaCedola(v);
+  cst.innerHTML = `
+    <div><span class="pl">${T('js.nCedole')}</span><span class="pv ced-ncedole">${cedoleNumero(v)}</span></div>
+    <div><span class="pl">${T('js.riscosso')}</span><span class="pv ced-riscosso">${eur(cedoleIncassate(v))}</span></div>
+    <div><span class="pl">${T('js.prossima')}</span><span class="pv">${fmtData(next)}</span></div>`;
+}
+
 function onVoceInput(ev, scheda){
   const card = ev.target.closest('.card');
   if(!card) return;
   const v = scheda.voci.find(x=>x.id===card.dataset.id);
   if(!v) return;
+
+  // Campi data digitabili (gg/mm/aaaa). Il testo va convertito in ISO prima di salvare,
+  // perche' tutto il resto dell'app lavora in YYYY-MM-DD. Due sorgenti confluiscono qui:
+  // - .date-text: la casella dove scrivi la data a mano
+  // - .date-native: il calendario nascosto, che gia' restituisce ISO
+  const dt = ev.target.classList && ev.target.classList.contains('date-text');
+  const dn = ev.target.classList && ev.target.classList.contains('date-native');
+  if(dt || dn){
+    const field = ev.target.closest('.date-field');
+    const textEl = field && field.querySelector('.date-text');
+    const nativeEl = field && field.querySelector('.date-native');
+    // il campo "logico" (data-ced / data-pac) sta sempre sulla casella di testo
+    const cedKey = textEl && textEl.dataset.ced;
+    const pacKey = textEl && textEl.dataset.pac;
+    let iso;
+    if(dn){
+      // dal calendario: valore gia' ISO. Rifletto la scelta nella casella di testo.
+      iso = ev.target.value || null;
+      if(textEl){ textEl.value = isoToVista(iso); textEl.dataset.iso = iso || ''; }
+    } else {
+      // dalla digitazione: provo a convertire. Se non e' (ancora) una data valida,
+      // NON salvo e NON ricalcolo — aspetto che finisca di scrivere, senza dare errori
+      // rossi a ogni cifra. L'ultimo valore valido resta quello salvato.
+      iso = vistaToIso(ev.target.value);
+      if(iso === null){
+        // se ha svuotato del tutto il campo, azzero la data (scadenza opzionale)
+        if(ev.target.value.trim()===''){ iso = null; }
+        else { textEl.dataset.iso = textEl.dataset.iso || ''; return; }
+      }
+      textEl.dataset.iso = iso || '';
+      if(nativeEl) nativeEl.value = iso || '';
+    }
+    // scrivo sull'oggetto e ricalcolo. IMPORTANTE: se la modifica arriva dalla
+    // DIGITAZIONE (.date-text a fuoco), NON faccio save() completo: ridisegnerebbe la
+    // card e mi butterebbe fuori dal campo mentre scrivo (lo stesso problema della
+    // tastiera Android). Aggiorno solo i valori derivati. Il ridisegno completo — che
+    // serve al badge "scaduto" e alle stat cedola — lo faccio dal calendario (dn), dove
+    // il focus non e' sulla casella, o quando il campo perde il focus (evento change).
+    const isChange = ev.type === 'change';
+    const ridisegna = dn || isChange;
+    if(cedKey){
+      v.cedola = v.cedola || {};
+      v.cedola[cedKey] = iso;
+      if(ridisegna){ save(); return; }
+      persist();
+      aggiornaStatCedola(card, v);
+      updateCardResult(card, v);
+      renderRiepilogoTotals();
+      return;
+    }
+    if(pacKey){
+      v.pac = v.pac || {};
+      v.pac[pacKey] = iso;
+      if(ridisegna){ save(); return; }
+      persist();
+      updateCardResult(card, v);
+      renderRiepilogoTotals();
+      return;
+    }
+    return;
+  }
 
   // etichette personalizzate (tipo perso)
   const lf = ev.target.dataset.lf;
@@ -2835,7 +2997,9 @@ function updateCardResult(card, v){
   const ced = cedoleIncassate(v);
   const g = val.attuale - val.carico; const gp = val.carico ? g/val.carico : 0;
   const res = card.querySelector('.card-result');
-  if(res && cm!=='importo') res.innerHTML = `<span>${eur(val.carico)} &rarr; ${eur(val.attuale)}</span><span class="g-eur ${gClass(g)}">${eur(g)} · ${pct(gp)}</span>`;
+  if(res && cm!=='importo') res.innerHTML = `
+      <div class="cr-line cr-vals"><span class="cr-carico">${eur(val.carico)}</span><span class="cr-arrow">&rarr;</span><span class="cr-attuale">${eur(val.attuale)}</span></div>
+      <div class="cr-line cr-gain ${gClass(g)}"><span class="cr-geur">${eur(g)}</span><span class="cr-gpct">${pct(gp)}</span></div>`;
   // aggiorna i valori nel summary
   const perc = card.querySelector('.cs-perc');
   // .cs-solo va conservato: è lui che ancora a destra il valore unico. Riscrivendo
@@ -2850,7 +3014,7 @@ function updateCardResult(card, v){
     let quoteTxt = '';
     if(cm === 'qp' && v.qty != null && v.qty !== ''){
       const qLbl = v.tipo==='azioni' ? T('u.az') : (v.tipo==='crypto' ? T('u.coin') : T('u.quote'));
-      quoteTxt = ` · ${nfmt(n(v.qty), 4)} ${qLbl}`;
+      quoteTxt = ` · ${qtyC(n(v.qty))} ${qLbl}`;
     }
     csCarico.textContent = eurC(val.carico) + quoteTxt;
   }
@@ -2873,6 +3037,19 @@ function updateCardResult(card, v){
 }
 
 async function onVoceClick(ev, scheda){
+  // Pulsante calendario 📅: apre il date-picker nativo nascosto. Chi vuole digitare usa
+  // la casella di testo; chi preferisce il calendario tocca l'icona. showPicker() e' il
+  // modo moderno di aprirlo a comando; dove non c'e', un focus+click di ripiego.
+  const calBtn = ev.target.closest('.date-cal');
+  if(calBtn){
+    const field = calBtn.closest('.date-field');
+    const native = field && field.querySelector('.date-native');
+    if(native){
+      try{ native.showPicker(); }
+      catch(e){ native.focus(); native.click(); }
+    }
+    return;
+  }
   // frecce per scorrere gli anni del rendimento: agiscono solo sulla card, senza salvare
   const annoBtn = ev.target.closest('[data-anno]');
   if(annoBtn){

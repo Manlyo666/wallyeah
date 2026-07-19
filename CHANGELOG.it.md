@@ -2,6 +2,15 @@
 
 Tutte le modifiche rilevanti di WallYeah, dalla più recente.
 
+## 1.0.11 — 2026-07-19
+
+- Le date (inizio, prima cedola, scadenza) ora si possono digitare a mano nel formato gg/mm/aaaa, oltre che sceglierle dal calendario con l'apposito pulsante. Molto più rapido per le scadenze lontane, come quelle dei BTP.
+
+## 1.0.10 — 2026-07-19
+
+- Voce aperta più leggibile: su una riga versato → attuale, sulla riga sotto (in verde/rosso) il guadagno in euro e in percentuale, e in fondo il rendimento dell'anno selezionato.
+- Voce chiusa più compatta: gli importi oltre 10.000 si accorciano (es. “12,5k”) e le quote dei fondi/ETF usano la sigla “Q”.
+
 ## 1.0.9 — 2026-07-19
 
 - Corretto un bug su Android per cui toccando un campo (prezzo, ISIN, nome) la tastiera si apriva e si richiudeva subito, rendendo impossibile modificarlo. L'apertura della tastiera non ridisegna più la scheda mentre stai scrivendo.
