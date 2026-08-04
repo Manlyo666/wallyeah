@@ -99,7 +99,10 @@
      internamente, senza mai schiacciare i valori a destra. */
   /* CARD APERTA: qui non ci sono piu' numeri sulla riga, quindi il campo nome si prende
      tutto lo spazio che resta. Niente troncamento: si legge e si scrive per intero. */
-  .card-summary input.cs-nome-input{flex:1 1 auto; min-width:3rem; max-width:none; width:auto;
+  /* Il campo nome NON si espande a riempire la riga: la sua larghezza la decide l'attributo
+     size (in caratteri), piccola di base e piu' larga solo per i nomi lunghi. Lo spazio che
+     resta sulla riga e' cosi' libero e cliccabile per chiudere la card. */
+  .card-summary input.cs-nome-input{flex:0 0 auto; width:auto; min-width:3rem; max-width:60%;
     background:transparent; border:none;
     border-bottom:1px dashed var(--border); color:var(--text); font-family:'Space Grotesk',sans-serif;
     font-size:.92rem; font-weight:600; padding:0 0 1px; transition:border-color .15s;}
@@ -169,17 +172,17 @@
   /* Riquadro coi valori esatti del punto sotto il puntatore (o toccato, su mobile).
      È HTML sopra il canvas: si posiziona senza ridisegnare il grafico. */
   .chart-tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .12s;
-    background:#0d1727; border:1px solid var(--border); border-radius:9px; padding:.45rem .6rem;
-    font-size:.72rem; line-height:1.45; white-space:nowrap; z-index:5;
-    box-shadow:0 6px 18px rgba(0,0,0,.45); transform:translate(-50%, -100%);}
-  .chart-tip.on{opacity:1;}
+    background:rgba(13,23,39,.92); border:1px solid var(--border); border-radius:8px; padding:.32rem .45rem;
+    font-size:.64rem; line-height:1.35; white-space:nowrap; z-index:5;
+    box-shadow:0 4px 12px rgba(0,0,0,.4); transform:translate(-50%, 0); backdrop-filter:blur(2px);}
+  .chart-tip.on{opacity:.96;}
   .chart-tip .tip-data{color:var(--gold-soft); font-weight:700; font-family:'Space Grotesk',sans-serif;
-    display:block; margin-bottom:.2rem;}
-  .chart-tip .tip-riga{display:flex; align-items:center; gap:.4rem;}
-  .chart-tip .tip-sw{width:8px; height:8px; border-radius:2px; flex:0 0 auto;}
-  .chart-tip .tip-nome{color:var(--muted); overflow:hidden; text-overflow:ellipsis; max-width:10rem;}
+    display:block; margin-bottom:.12rem; font-size:.62rem;}
+  .chart-tip .tip-riga{display:flex; align-items:center; gap:.35rem;}
+  .chart-tip .tip-sw{width:7px; height:7px; border-radius:2px; flex:0 0 auto;}
+  .chart-tip .tip-nome{color:var(--muted); overflow:hidden; text-overflow:ellipsis; max-width:8rem;}
   .chart-tip .tip-val{color:var(--text); font-family:'Space Grotesk',sans-serif; font-weight:600; margin-left:auto;}
-  .chart-tip .tip-extra{color:var(--muted); font-size:.66rem; margin-top:.15rem;}
+  .chart-tip .tip-extra{color:var(--muted); font-size:.6rem; margin-top:.1rem;}
   .chart-card canvas{width:100%; height:190px; display:block;}
   .chips{display:flex; gap:.4rem; overflow-x:auto; padding-bottom:.2rem; margin-bottom:.8rem; scrollbar-width:none;}
   .chips::-webkit-scrollbar{display:none;}
@@ -409,6 +412,10 @@
 
   /* --- Card comprimibili --- */
   .card-summary{display:flex; align-items:center; gap:.55rem; cursor:pointer; padding:.15rem 0;}
+  /* A card aperta tutta la riga chiude (torna cursor:pointer). Il campo nome, essendo stretto
+     e non-espanso, lascia spazio vuoto: spingo i valori a destra cosi' la zona in mezzo e'
+     un chiaro bersaglio "chiudi". */
+  .card-summary.card-summary-open .cs-money{margin-left:auto;}
   /* maniglia di trascinamento: zona dedicata al riordino, così tenere premuto sul resto
      della riga (o dentro il campo nome) non fa più partire il trascinamento per sbaglio */
   .card-summary .cs-grip{flex:0 0 auto; color:var(--muted); opacity:.4; font-size:.95rem;
@@ -466,8 +473,14 @@
   .pill-head .ph-txt b{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.84rem; display:block;}
   .pill-head .ph-txt small{color:var(--muted); font-size:.7rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;}
   .pill-head .ph-chev{color:var(--muted); font-size:.8rem; flex:0 0 auto;}
-  .pill-head .ph-off{flex:0 0 auto; background:none; border:none; color:var(--muted); font-size:.85rem; padding:.2rem .35rem; border-radius:6px;}
-  .pill-head .ph-off:hover{color:var(--red);}
+  /* La ✕ che disattiva l'opzione era minuscola e appiccicata al chevron del collapse:
+     un missclick la centrava facilmente. Ora ha un'area di tocco piu' ampia (~34px),
+     un margine che la stacca dal chevron e un bordo tenue che la marca come azione a se'. */
+  .pill-head .ph-off{flex:0 0 auto; background:none; border:1px solid var(--border); color:var(--muted);
+    font-size:.9rem; line-height:1; min-width:34px; min-height:34px; display:inline-flex;
+    align-items:center; justify-content:center; padding:0; border-radius:8px; margin-left:.3rem;
+    -webkit-tap-highlight-color:transparent;}
+  .pill-head .ph-off:hover, .pill-head .ph-off:active{color:var(--red); border-color:var(--red);}
   .pill-body{padding:0 .7rem .7rem;}
 
   /* --- Saldo liquidità con + --- */
@@ -721,6 +734,7 @@ const I18N = {
     'cs.noname':'Senza nome',
     'ph.nomeBreve':'Nome breve…',
     'grip.title':'Trascina per riordinare',
+    'grip.chiudi':'Chiudi',
 
     // tipi
     'tipo.azioni':'Azioni', 'tipo.azioni.desc':'Singoli titoli azionari quotati.',
@@ -906,6 +920,12 @@ const I18N = {
     "m.elimVoceTxt":"“{n}” verrà rimossa dalla scheda.",
     "m.elimVoceNN":"La voce senza nome verrà rimossa.",
     "m.tassoUnicoT":"Tornare al tasso unico?",
+    "m.disCedoleT":"Disattivare le cedole?",
+    "m.disCedoleTxt":"Le cedole non verranno più conteggiate. La configurazione (date, cadenza, tasso) resta salvata e torna se le riattivi.",
+    "m.disCedole":"Disattiva",
+    "m.disPacT":"Disattivare il PAC?",
+    "m.disPacTxt":"I versamenti programmati non verranno più conteggiati. La configurazione resta salvata e torna se lo riattivi.",
+    "m.disPac":"Disattiva",
     "m.tassoUnico1":"Lo scaglione inserito verrà rimosso.",
     "m.tassoUnicoN":"I {n} scaglioni inseriti verranno rimossi.",
     "m.continua":"Continua",
@@ -968,6 +988,7 @@ const I18N = {
     'cs.noname':'Unnamed',
     'ph.nomeBreve':'Short name…',
     'grip.title':'Drag to reorder',
+    'grip.chiudi':'Collapse',
 
     'tipo.azioni':'Stocks', 'tipo.azioni.desc':'Individual listed equities.',
     'tipo.etf':'ETFs', 'tipo.etf.desc':'Passively managed exchange-traded funds.',
@@ -1150,6 +1171,12 @@ const I18N = {
     "m.elimVoceTxt":"“{n}” will be removed from the sheet.",
     "m.elimVoceNN":"The unnamed entry will be removed.",
     "m.tassoUnicoT":"Go back to a single rate?",
+    "m.disCedoleT":"Turn off coupons?",
+    "m.disCedoleTxt":"Coupons will no longer be counted. Your setup (dates, frequency, rate) stays saved and comes back if you turn them on again.",
+    "m.disCedole":"Turn off",
+    "m.disPacT":"Turn off the recurring plan?",
+    "m.disPacTxt":"Scheduled contributions will no longer be counted. Your setup stays saved and comes back if you turn it on again.",
+    "m.disPac":"Turn off",
     "m.tassoUnico1":"The step you entered will be removed.",
     "m.tassoUnicoN":"The {n} steps you entered will be removed.",
     "m.continua":"Continue",
@@ -1240,7 +1267,7 @@ const STORE_KEY = "portafoglio_v4";
 
 // Versione dell'app. Va aumentata a ogni rilascio: il service worker la usa come nome
 // della cache, così un nuovo numero costringe il browser a riscaricare tutto.
-const APP_VERSION = "1.0.11";
+const APP_VERSION = "1.0.14";
 
 // =========================================================
 // CHANGELOG — fonte unica
@@ -1251,6 +1278,29 @@ const APP_VERSION = "1.0.11";
 // La versione piu' recente va in cima. Le voci prima della 1.1 sono ricostruite a
 // posteriori: descrivono le funzioni gia' presenti, non modifiche puntuali.
 const CHANGELOG = [
+  { v:"1.0.14", d:"2026-08-03", it:[
+      "Con una voce aperta: il campo del nome ora ha una larghezza fissa e compatta, che si allarga solo se il nome \u00e8 lungo. Toccare la riga fuori dal nome richiude la voce, toccare il nome ti permette di modificarlo.",
+    ], en:[
+      "With an entry open: the name field now has a fixed, compact width that grows only for long names. Tapping the row outside the name collapses the entry, tapping the name lets you edit it.",
+    ]},
+  { v:"1.0.13", d:"2026-08-03", it:[
+      "Lo storico dei mesi pi\u00f9 vecchi di un anno viene compattato: per ogni mese resta l'ultima istantanea (la chiusura), come si usa nei grafici storici. I mesi dell'ultimo anno restano a piena risoluzione.",
+      "I dettagli che compaiono nei grafici ora sono pi\u00f9 piccoli e restano ancorati in basso, senza coprire il punto che stai guardando.",
+      "Con una voce aperta, toccare accanto al nome non la chiude pi\u00f9 per sbaglio: ora si chiude solo con la freccia. Cos\u00ec puoi scrivere nel nome senza richiuderla.",
+      "In ogni scheda il pulsante per aggiungere una voce mostra il nome della scheda (es. \u201c+ Azioni\u201d) invece di \u201c+ Voce\u201d.",
+    ], en:[
+      "History older than one year is compacted: one snapshot per month is kept (the month's close), as is standard for historical charts. Months within the last year stay at full resolution.",
+      "The details shown on the charts are now smaller and stay anchored at the bottom, without covering the point you're looking at.",
+      "With an entry open, tapping next to the name no longer closes it by mistake: it now closes only with the arrow. So you can edit the name without collapsing it.",
+      "In each sheet, the add-entry button shows the sheet's name (e.g. \u201c+ Stocks\u201d) instead of \u201c+ Entry\u201d.",
+    ]},
+  { v:"1.0.12", d:"2026-07-19", it:[
+      "Disattivare le cedole o il PAC ora chiede conferma: prima un tocco per sbaglio sulla ✕ (piccola e vicina al pulsante per rimpicciolire) azzerava tutto senza avviso.",
+      "Il pulsante ✕ per disattivare un'opzione \u00e8 pi\u00f9 grande e distanziato, per evitare tocchi accidentali.",
+    ], en:[
+      "Turning off coupons or the recurring plan now asks for confirmation: before, an accidental tap on the ✕ (small and close to the collapse button) wiped everything with no warning.",
+      "The ✕ button that turns an option off is now larger and spaced out, to avoid accidental taps.",
+    ]},
   { v:"1.0.11", d:"2026-07-19", it:[
       "Le date (inizio, prima cedola, scadenza) ora si possono digitare a mano nel formato gg/mm/aaaa, oltre che sceglierle dal calendario con l'apposito pulsante. Molto pi\u00f9 rapido per le scadenze lontane, come quelle dei BTP.",
     ], en:[
@@ -2244,7 +2294,7 @@ function renderSchedaPanel(scheda){
         <p>${scheda.voci.length} vo${scheda.voci.length===1?'ce':'ci'} · <span class="tipo-badge ${tipoDef(scheda.tipo).badge}">${tipoDef(scheda.tipo).icon} ${esc(tipoDef(scheda.tipo).label)}</span></p>
       </div>
       <div class="head-actions">
-        <button class="add-btn" data-act="addVoce" data-schedaid="${scheda.id}">${T('js.addVoce')}</button>
+        <button class="add-btn" data-act="addVoce" data-schedaid="${scheda.id}">+ ${esc(scheda.nome)}</button>
         <button class="icon-btn" data-act="rmScheda" data-schedaid="${scheda.id}">&#128465;</button>
       </div>
     </div>
@@ -2464,15 +2514,29 @@ function vociCardHTML(schedaId, v){
       <span class="cs-perc ${gClass(g)}">${pct(gp)}</span>`;
   }
   // Con la card CHIUSA il nome è solo testo (e tutta la riga apre/chiude).
-  // Con la card APERTA diventa un campo: si rinomina lì, senza ripeterlo sotto.
-  // Niente size=: era quello a far dilatare il campo oltre la riga sui nomi lunghi.
+  // Con la card APERTA il nome diventa un campo per rinominare. Il campo ha una larghezza
+  // "al contenuto": piccola di base, si allarga solo se il nome è lungo (via attributo
+  // size, in caratteri, con un minimo e un massimo). Tutto lo spazio della riga NON
+  // occupato dal campo resta cliccabile per chiudere la card.
+  const nomeLen = (v.nome||'').length;
+  const nomeSize = Math.max(6, Math.min(nomeLen + 1, 22)); // min 6, max 22 caratteri
   const nomeCell = cardOpen
-    ? `<input class="cs-nome-input" data-f="nome" value="${esc(v.nome)}" placeholder="${T('ph.nomeBreve')}">`
+    ? `<input class="cs-nome-input" data-f="nome" size="${nomeSize}" value="${esc(v.nome)}" placeholder="${T('ph.nomeBreve')}">`
     : `<span class="cs-nome" title="${esc(v.nome||'')}">${nomeShow}</span>`;
-  const summary = `
-    <div class="card-summary" data-act="toggleCard">
+  // A card aperta: tutta la riga chiude (toggleCard), TRANNE il campo nome e la maniglia.
+  // Il campo nome ferma la propagazione del proprio click (vedi onVoceClick), cosi' ci
+  // scrivi senza chiudere; toccare qualsiasi altro punto della riga chiude la card.
+  const summary = cardOpen
+    ? `<div class="card-summary card-summary-open" data-act="toggleCard">
       <span class="cs-grip" data-act="dragHandle" title="${T('grip.title')}">⋮⋮</span>
-      <span class="cs-chevron">${cardOpen?'▾':'▸'}</span>
+      <span class="cs-chevron">▾</span>
+      <span class="cs-badge ${def.badge}">${def.icon}</span>
+      ${nomeCell}
+      ${summaryVals}
+    </div>`
+    : `<div class="card-summary" data-act="toggleCard">
+      <span class="cs-grip" data-act="dragHandle" title="${T('grip.title')}">⋮⋮</span>
+      <span class="cs-chevron">▸</span>
       <span class="cs-badge ${def.badge}">${def.icon}</span>
       ${nomeCell}
       ${summaryVals}
@@ -3105,6 +3169,13 @@ async function onVoceClick(ev, scheda){
   // --- pillole PAC ---
   if(pacToggleOn){
     v.pac = v.pac || {};
+    // Se sto SPEGNENDO un PAC attivo, chiedo conferma: la ✕ e' minuscola e a un pixel dal
+    // pulsante che apre/chiude il pannello, quindi il missclick e' facilissimo e "resetta"
+    // (dalla vista dell'utente) la configurazione. Attivarlo invece non distrugge nulla.
+    if(v.pac.on){
+      const ok = await askConfirm(T('m.disPacT'), T('m.disPacTxt'), T('m.disPac'));
+      if(!ok) return;
+    }
     v.pac.on = !v.pac.on;
     if(v.pac.on){
       if(!v.pac.dataInizio) v.pac.dataInizio = new Date().toISOString().slice(0,10);
@@ -3118,6 +3189,12 @@ async function onVoceClick(ev, scheda){
   // --- pillole Cedole ---
   if(cedToggleOn){
     v.cedola = v.cedola || {};
+    // Stesso ragionamento del PAC: conferma solo quando si SPEGNE una configurazione
+    // attiva. E' l'azione che ti ha fatto perdere il lavoro con un tocco sbagliato.
+    if(v.cedola.on){
+      const ok = await askConfirm(T('m.disCedoleT'), T('m.disCedoleTxt'), T('m.disCedole'));
+      if(!ok) return;
+    }
     v.cedola.on = !v.cedola.on;
     if(v.cedola.on){
       if(!v.cedola.dataInizio) v.cedola.dataInizio = new Date().toISOString().slice(0,10);
@@ -3388,6 +3465,45 @@ function renderStorico(){
   const etichetta = storicoFiltro==='tutto' ? '' :
     `<p class="hint" style="margin-bottom:.5rem">${T('js.storicoFiltrato')}</p>`;
   list.innerHTML = etichetta + righe;
+}
+
+// Compatta lo storico: per ogni MESE concluso da oltre un anno tiene una sola istantanea,
+// quella con la data piu' recente del mese (la "chiusura"), e scarta le altre. I mesi
+// dell'ultimo anno restano a piena risoluzione (puoi averne piu' d'una al mese), perche'
+// sono quelli che guardi piu' spesso. Le istantanee sono gia' identificate da una chiave
+// data YYYY-MM-DD; qui raggruppo per YYYY-MM e, sui mesi vecchi, tengo solo l'ultima.
+// Ritorna quante ne ha rimosse (0 se non c'era nulla da compattare).
+function compattaStorico(){
+  if(!Array.isArray(state.storico) || state.storico.length < 2) return 0;
+  // soglia: primo giorno del mese di un anno fa. I mesi PRIMA di questa soglia si compattano.
+  const now = new Date();
+  const soglia = new Date(now.getFullYear()-1, now.getMonth(), 1); // 12 mesi indietro, inizio mese
+  const meseChiave = s => (s.mese || '').slice(0,7); // YYYY-MM
+  const perMese = {};
+  for(const s of state.storico){
+    const k = meseChiave(s);
+    if(!k) continue;
+    (perMese[k] = perMese[k] || []).push(s);
+  }
+  const tenere = new Set();
+  let rimosse = 0;
+  for(const k of Object.keys(perMese)){
+    const gruppo = perMese[k];
+    const primoDelMese = new Date(k + '-01T00:00:00');
+    if(primoDelMese >= soglia || gruppo.length === 1){
+      // mese recente o gia' singolo: tengo tutto
+      gruppo.forEach(s=>tenere.add(s.id));
+    } else {
+      // mese vecchio con piu' istantanee: tengo solo quella con la data piu' alta
+      gruppo.sort((a,b)=> (a.mese||'').localeCompare(b.mese||''));
+      tenere.add(gruppo[gruppo.length-1].id);
+      rimosse += gruppo.length - 1;
+    }
+  }
+  if(rimosse > 0){
+    state.storico = state.storico.filter(s=>tenere.has(s.id));
+  }
+  return rimosse;
 }
 
 function salvaSnapshot(){
@@ -3822,15 +3938,17 @@ function mostraChartTip(clientX, clientY){
   }
   tip.innerHTML = chartTipHTML(best);
   tip.classList.add('on');
-  // posiziono sopra il punto più alto della colonna, dentro i bordi della card
-  const yTop = Math.min(...best.voci.map(v=>v.yPix));
+  // Il tooltip resta ANCORATO IN BASSO al grafico invece di seguire il punto: cosi' non
+  // copre mai le candele su cui stai puntando e non "salta" in verticale. Segue solo la
+  // X del puntatore (per restare vicino alla colonna) ed e' vincolato ai bordi della card.
   const card = canvas.parentElement;
   const cardW = card.clientWidth;
   const offX = canvas.offsetLeft + best.x;
   const tw = tip.offsetWidth;
   const clampX = Math.max(tw/2 + 4, Math.min(offX, cardW - tw/2 - 4));
   tip.style.left = clampX + 'px';
-  tip.style.top  = Math.max(tip.offsetHeight + 2, canvas.offsetTop + yTop - 8) + 'px';
+  // ancorato sotto: parte bassa della card, con un piccolo margine
+  tip.style.top  = (canvas.offsetTop + canvas.offsetHeight - tip.offsetHeight - 6) + 'px';
   disegnaMirino(best);
 }
 function nascondiChartTip(){
@@ -5170,6 +5288,10 @@ function popupSeAggiornato(){
 // (aprire da http/https invece che da file://, o installare la PWA) invece di credere
 // che l'app sia rotta. L'avviso non blocca: l'app resta usabile nella sessione corrente.
 if(!storagePersiste()){ mostraAvvisoStorage(); }
+
+// All'avvio compatto lo storico: i mesi vecchi (oltre un anno) restano con una sola
+// istantanea di chiusura. Se qualcosa e' stato rimosso, persisto senza ridisegnare.
+try{ if(compattaStorico() > 0) persist(); }catch(e){}
 
 // Primo avvio: se la configurazione non è mai stata fatta, apri il wizard.
 if(!state.setupDone){ openWizard(true); }

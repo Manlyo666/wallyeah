@@ -2,6 +2,22 @@
 
 All notable changes to WallYeah, newest first.
 
+## 1.0.14 — 2026-08-03
+
+- With an entry open: the name field now has a fixed, compact width that grows only for long names. Tapping the row outside the name collapses the entry, tapping the name lets you edit it.
+
+## 1.0.13 — 2026-08-03
+
+- History older than one year is compacted: one snapshot per month is kept (the month's close), as is standard for historical charts. Months within the last year stay at full resolution.
+- The details shown on the charts are now smaller and stay anchored at the bottom, without covering the point you're looking at.
+- With an entry open, tapping next to the name no longer closes it by mistake: it now closes only with the arrow. So you can edit the name without collapsing it.
+- In each sheet, the add-entry button shows the sheet's name (e.g. “+ Stocks”) instead of “+ Entry”.
+
+## 1.0.12 — 2026-07-19
+
+- Turning off coupons or the recurring plan now asks for confirmation: before, an accidental tap on the ✕ (small and close to the collapse button) wiped everything with no warning.
+- The ✕ button that turns an option off is now larger and spaced out, to avoid accidental taps.
+
 ## 1.0.11 — 2026-07-19
 
 - Dates (start, first coupon, maturity) can now be typed by hand as dd/mm/yyyy, as well as picked from the calendar with the dedicated button. Much faster for far-off dates like bond maturities.

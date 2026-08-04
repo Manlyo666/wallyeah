@@ -1,0 +1,432 @@
+{
+  "schede": [
+    {
+      "id": "4s8kzyx",
+      "nome": "ETF",
+      "tipo": "etf",
+      "voci": [
+        {
+          "id": "yy4g3nx",
+          "nome": "MSCI ishares",
+          "tipo": "etf",
+          "qty": 2500,
+          "prezzoCarico": 10.744,
+          "prezzoAttuale": 13.822,
+          "versato": null,
+          "valoreAttuale": null
+        },
+        {
+          "id": "a4rtdn5",
+          "nome": "ishares sep",
+          "tipo": "etf",
+          "qty": 48,
+          "prezzoCarico": 607,
+          "prezzoAttuale": 711.92,
+          "versato": null,
+          "valoreAttuale": null
+        },
+        {
+          "id": "1fptpvu",
+          "nome": "ishares core msci",
+          "tipo": "etf",
+          "qty": 6,
+          "prezzoCarico": 118.42,
+          "prezzoAttuale": 126.29,
+          "versato": null,
+          "valoreAttuale": null
+        },
+        {
+          "id": "wvu5ogq",
+          "nome": "ishares msci ING",
+          "tipo": "etf",
+          "qty": 5900,
+          "prezzoCarico": 10.848,
+          "prezzoAttuale": 13.886,
+          "versato": null,
+          "valoreAttuale": null
+        },
+        {
+          "id": "rg2p3ww",
+          "nome": "vanguard sep 500 ING",
+          "tipo": "etf",
+          "qty": 799,
+          "prezzoCarico": 100.796,
+          "prezzoAttuale": 127.61,
+          "versato": null,
+          "valoreAttuale": null
+        }
+      ]
+    },
+    {
+      "id": "pgjr8dd",
+      "nome": "Fondi",
+      "tipo": "fondi",
+      "voci": [
+        {
+          "id": "t831mm6",
+          "nome": "eurizon az america",
+          "tipo": "fondi",
+          "qty": 800,
+          "prezzoCarico": 16.38,
+          "prezzoAttuale": 58.193,
+          "versato": null,
+          "valoreAttuale": null
+        },
+        {
+          "id": "w4ey4kh",
+          "nome": "eurizon az europa",
+          "tipo": "fondi",
+          "qty": 2000,
+          "prezzoCarico": 8.534,
+          "prezzoAttuale": 21.859,
+          "versato": null,
+          "valoreAttuale": null,
+          "cedola": {
+            "on": false,
+            "dataInizio": "2026-07-15",
+            "cadenza": "sem"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ht2wnpy",
+      "nome": "Titoli di Stato",
+      "tipo": "titoli",
+      "voci": [
+        {
+          "id": "irn7jrh",
+          "nome": "btp giugno 27",
+          "tipo": "titoli",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": null,
+          "importoBond": 23000,
+          "cedola": {
+            "on": false,
+            "dataInizio": "2023-03-01",
+            "cadenza": "trim",
+            "scaglioni": [
+              {
+                "tasso": 3.5,
+                "anni": 1
+              },
+              {
+                "tasso": 3.6,
+                "anni": 1
+              },
+              {
+                "tasso": 4,
+                "anni": 2
+              }
+            ]
+          },
+          "rendimento": null
+        },
+        {
+          "id": "57nyf7f",
+          "nome": "btp ott32",
+          "tipo": "titoli",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": null,
+          "importoBond": 10000
+        },
+        {
+          "id": "8alrrq0",
+          "nome": "btp mg30",
+          "tipo": "titoli",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": null,
+          "importoBond": 5000
+        },
+        {
+          "id": "mb47w0i",
+          "nome": "btp mz30",
+          "tipo": "titoli",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": null,
+          "importoBond": 20000
+        },
+        {
+          "id": "ozry9d9",
+          "nome": "btp+sc33 ING",
+          "tipo": "titoli",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": null,
+          "importoBond": 20000
+        },
+        {
+          "id": "x63uqp3",
+          "nome": "btp val mg 30 ING",
+          "tipo": "titoli",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": null,
+          "importoBond": 20000
+        },
+        {
+          "id": "yv1wycm",
+          "nome": "btp val sc mz30 ING",
+          "tipo": "titoli",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": null,
+          "importoBond": 20000
+        }
+      ]
+    },
+    {
+      "id": "cyvirt7",
+      "nome": "Liquidità",
+      "tipo": "liquid",
+      "voci": [
+        {
+          "id": "740llyh",
+          "nome": "Fineco",
+          "tipo": "liquid",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": 2345
+        },
+        {
+          "id": "4a7ek7s",
+          "nome": "ing",
+          "tipo": "liquid",
+          "qty": null,
+          "prezzoCarico": null,
+          "prezzoAttuale": null,
+          "versato": null,
+          "valoreAttuale": 8500
+        }
+      ]
+    }
+  ],
+  "storico": [
+    {
+      "id": "gkz0pj9",
+      "mese": "2026-07-15",
+      "perVoce": {
+        "yy4g3nx": {
+          "nome": "MSCI ishares",
+          "schedaNome": "ETF",
+          "schedaId": "4s8kzyx",
+          "tipo": "etf",
+          "carico": 26860,
+          "attuale": 34555,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": 2500,
+          "haQuote": true
+        },
+        "a4rtdn5": {
+          "nome": "ishares sep",
+          "schedaNome": "ETF",
+          "schedaId": "4s8kzyx",
+          "tipo": "etf",
+          "carico": 29136,
+          "attuale": 34172.159999999996,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": 48,
+          "haQuote": true
+        },
+        "1fptpvu": {
+          "nome": "ishares core msci",
+          "schedaNome": "ETF",
+          "schedaId": "4s8kzyx",
+          "tipo": "etf",
+          "carico": 710.52,
+          "attuale": 757.74,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": 6,
+          "haQuote": true
+        },
+        "wvu5ogq": {
+          "nome": "ishares msci ING",
+          "schedaNome": "ETF",
+          "schedaId": "4s8kzyx",
+          "tipo": "etf",
+          "carico": 64003.200000000004,
+          "attuale": 81927.4,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": 5900,
+          "haQuote": true
+        },
+        "rg2p3ww": {
+          "nome": "vanguard sep 500 ING",
+          "schedaNome": "ETF",
+          "schedaId": "4s8kzyx",
+          "tipo": "etf",
+          "carico": 80536.004,
+          "attuale": 101960.39,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": 799,
+          "haQuote": true
+        },
+        "t831mm6": {
+          "nome": "eurizon az america",
+          "schedaNome": "Fondi",
+          "schedaId": "pgjr8dd",
+          "tipo": "fondi",
+          "carico": 13104,
+          "attuale": 46554.4,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": 800,
+          "haQuote": true
+        },
+        "w4ey4kh": {
+          "nome": "eurizon az europa",
+          "schedaNome": "Fondi",
+          "schedaId": "pgjr8dd",
+          "tipo": "fondi",
+          "carico": 17068,
+          "attuale": 43718,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": 2000,
+          "haQuote": true
+        },
+        "irn7jrh": {
+          "nome": "btp giugno 27",
+          "schedaNome": "Titoli di Stato",
+          "schedaId": "ht2wnpy",
+          "tipo": "titoli",
+          "carico": 23000,
+          "attuale": 23000,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": null,
+          "haQuote": false
+        },
+        "57nyf7f": {
+          "nome": "btp ott32",
+          "schedaNome": "Titoli di Stato",
+          "schedaId": "ht2wnpy",
+          "tipo": "titoli",
+          "carico": 10000,
+          "attuale": 10000,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": null,
+          "haQuote": false
+        },
+        "8alrrq0": {
+          "nome": "btp mg30",
+          "schedaNome": "Titoli di Stato",
+          "schedaId": "ht2wnpy",
+          "tipo": "titoli",
+          "carico": 5000,
+          "attuale": 5000,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": null,
+          "haQuote": false
+        },
+        "mb47w0i": {
+          "nome": "btp mz30",
+          "schedaNome": "Titoli di Stato",
+          "schedaId": "ht2wnpy",
+          "tipo": "titoli",
+          "carico": 20000,
+          "attuale": 20000,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": null,
+          "haQuote": false
+        },
+        "ozry9d9": {
+          "nome": "btp+sc33 ING",
+          "schedaNome": "Titoli di Stato",
+          "schedaId": "ht2wnpy",
+          "tipo": "titoli",
+          "carico": 20000,
+          "attuale": 20000,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": null,
+          "haQuote": false
+        },
+        "x63uqp3": {
+          "nome": "btp val mg 30 ING",
+          "schedaNome": "Titoli di Stato",
+          "schedaId": "ht2wnpy",
+          "tipo": "titoli",
+          "carico": 20000,
+          "attuale": 20000,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": null,
+          "haQuote": false
+        },
+        "yv1wycm": {
+          "nome": "btp val sc mz30 ING",
+          "schedaNome": "Titoli di Stato",
+          "schedaId": "ht2wnpy",
+          "tipo": "titoli",
+          "carico": 20000,
+          "attuale": 20000,
+          "cedole": 0,
+          "contaPerc": true,
+          "qty": null,
+          "haQuote": false
+        },
+        "740llyh": {
+          "nome": "Fineco",
+          "schedaNome": "Liquidità",
+          "schedaId": "cyvirt7",
+          "tipo": "liquid",
+          "carico": 2345,
+          "attuale": 2345,
+          "cedole": 0,
+          "contaPerc": false,
+          "qty": null,
+          "haQuote": false
+        },
+        "4a7ek7s": {
+          "nome": "ing",
+          "schedaNome": "Liquidità",
+          "schedaId": "cyvirt7",
+          "tipo": "liquid",
+          "carico": 8500,
+          "attuale": 8500,
+          "cedole": 0,
+          "contaPerc": false,
+          "qty": null,
+          "haQuote": false
+        }
+      },
+      "totCarico": 360262.724,
+      "totAttuale": 472490.09,
+      "invCarico": 349417.724,
+      "invAttuale": 461645.09
+    }
+  ],
+  "setupDone": true,
+  "reminderCadenza": "mese",
+  "lastSnapshot": "2026-07-15T16:24:24.208Z",
+  "ordineManuale": false
+}

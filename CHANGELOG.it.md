@@ -2,6 +2,22 @@
 
 Tutte le modifiche rilevanti di WallYeah, dalla più recente.
 
+## 1.0.14 — 2026-08-03
+
+- Con una voce aperta: il campo del nome ora ha una larghezza fissa e compatta, che si allarga solo se il nome è lungo. Toccare la riga fuori dal nome richiude la voce, toccare il nome ti permette di modificarlo.
+
+## 1.0.13 — 2026-08-03
+
+- Lo storico dei mesi più vecchi di un anno viene compattato: per ogni mese resta l'ultima istantanea (la chiusura), come si usa nei grafici storici. I mesi dell'ultimo anno restano a piena risoluzione.
+- I dettagli che compaiono nei grafici ora sono più piccoli e restano ancorati in basso, senza coprire il punto che stai guardando.
+- Con una voce aperta, toccare accanto al nome non la chiude più per sbaglio: ora si chiude solo con la freccia. Così puoi scrivere nel nome senza richiuderla.
+- In ogni scheda il pulsante per aggiungere una voce mostra il nome della scheda (es. “+ Azioni”) invece di “+ Voce”.
+
+## 1.0.12 — 2026-07-19
+
+- Disattivare le cedole o il PAC ora chiede conferma: prima un tocco per sbaglio sulla ✕ (piccola e vicina al pulsante per rimpicciolire) azzerava tutto senza avviso.
+- Il pulsante ✕ per disattivare un'opzione è più grande e distanziato, per evitare tocchi accidentali.
+
 ## 1.0.11 — 2026-07-19
 
 - Le date (inizio, prima cedola, scadenza) ora si possono digitare a mano nel formato gg/mm/aaaa, oltre che sceglierle dal calendario con l'apposito pulsante. Molto più rapido per le scadenze lontane, come quelle dei BTP.
